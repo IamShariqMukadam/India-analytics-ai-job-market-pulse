@@ -1,0 +1,7 @@
+[theme]
+# This replaces the default purple everywhere (sliders, dropdowns, active states)
+primaryColor="#00F0FF" 
+backgroundColor="#020617"
+secondaryBackgroundColor="#0F172A"
+textColor="#F8FAFC"
+font="sans serif"
