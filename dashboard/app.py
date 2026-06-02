@@ -153,50 +153,50 @@ header { background: transparent !important; }
 }
 
             
-/* ─── ANIMATED SIDEBAR TOGGLE ─── */
-/* stToolbar is display:none so the only button left in header IS the toggle */
-header button,
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"] {
-    position: relative !important;
-    width: 52px !important;
-    height: 52px !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    background: #0F172A !important;
-    margin-top: 32px !important;
-    margin-left: 5px !important;
-}
-header button::before,
-[data-testid="collapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"]::before {
-    content: '' !important;
-    position: absolute !important;
-    width: 200% !important; height: 200% !important;
-    top: -50% !important; left: -50% !important;
-    background: conic-gradient(
-        transparent 0deg,
-        transparent 240deg,
-        rgba(0, 240, 255, 0.9) 240deg,
-        #3B82F6 360deg
-    ) !important;
-    animation: border-trace 2s linear infinite !important;
-    z-index: 0 !important;
-}
-header button svg,
-[data-testid="collapsedControl"] button svg,
-[data-testid="stSidebarCollapsedControl"] button svg {
-    fill: var(--cyan) !important;
-    color: var(--cyan) !important;
-    width: 24px !important;
-    height: 24px !important;
-    position: relative !important;
-    z-index: 2 !important;
-}
-@keyframes border-trace {
-    0%   { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+# /* ─── ANIMATED SIDEBAR TOGGLE ─── */
+# /* stToolbar is display:none so the only button left in header IS the toggle */
+# header button,
+# [data-testid="collapsedControl"],
+# [data-testid="stSidebarCollapsedControl"] {
+#     position: relative !important;
+#     width: 52px !important;
+#     height: 52px !important;
+#     border-radius: 12px !important;
+#     overflow: hidden !important;
+#     background: #0F172A !important;
+#     margin-top: 32px !important;
+#     margin-left: 5px !important;
+# }
+# header button::before,
+# [data-testid="collapsedControl"]::before,
+# [data-testid="stSidebarCollapsedControl"]::before {
+#     content: '' !important;
+#     position: absolute !important;
+#     width: 200% !important; height: 200% !important;
+#     top: -50% !important; left: -50% !important;
+#     background: conic-gradient(
+#         transparent 0deg,
+#         transparent 240deg,
+#         rgba(0, 240, 255, 0.9) 240deg,
+#         #3B82F6 360deg
+#     ) !important;
+#     animation: border-trace 2s linear infinite !important;
+#     z-index: 0 !important;
+# }
+# header button svg,
+# [data-testid="collapsedControl"] button svg,
+# [data-testid="stSidebarCollapsedControl"] button svg {
+#     fill: var(--cyan) !important;
+#     color: var(--cyan) !important;
+#     width: 24px !important;
+#     height: 24px !important;
+#     position: relative !important;
+#     z-index: 2 !important;
+# }
+# @keyframes border-trace {
+#     0%   { transform: rotate(0deg); }
+#     100% { transform: rotate(360deg); }
+# }
 
 /* ─── FIXED TABLE OVERRIDES (VISIBLE TEXT & NAVY THEME) ─── */
 [data-testid="stDataFrame"], [data-testid="stDataFrame"] > div {
@@ -273,6 +273,58 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
     color: var(--text-primary) !important;
 }
 </style>
+""", unsafe_allow_html=True)
+
+# ─── JS FIX: MutationObserver for sidebar toggle button ──────────────────────
+st.markdown("""
+<script>
+(function() {
+    const STYLE_ID = 'toggle-anim-style';
+    if (!document.getElementById(STYLE_ID)) {
+        const s = document.createElement('style');
+        s.id = STYLE_ID;
+        s.textContent = `
+            .anim-toggle {
+                position: relative !important;
+                width: 52px !important; height: 52px !important;
+                border-radius: 12px !important;
+                overflow: hidden !important;
+                background: #0F172A !important;
+                margin-top: 32px !important;
+                margin-left: 5px !important;
+            }
+            .anim-toggle::before {
+                content: '' !important;
+                position: absolute !important;
+                width: 200% !important; height: 200% !important;
+                top: -50% !important; left: -50% !important;
+                background: conic-gradient(transparent 0deg, transparent 240deg, rgba(0,240,255,0.9) 240deg, #3B82F6 360deg) !important;
+                animation: border-trace 2s linear infinite !important;
+                z-index: 0 !important;
+            }
+            .anim-toggle svg {
+                fill: #00F0FF !important; color: #00F0FF !important;
+                width: 24px !important; height: 24px !important;
+                position: relative !important; z-index: 2 !important;
+            }
+        `;
+        document.head.appendChild(s);
+    }
+
+    function applyClass() {
+        const btn = document.querySelector('[data-testid="collapsedControl"]')
+                 || document.querySelector('[data-testid="stSidebarCollapsedControl"]')
+                 || document.querySelector('header button');
+        if (btn && !btn.classList.contains('anim-toggle')) {
+            btn.classList.add('anim-toggle');
+        }
+    }
+
+    const obs = new MutationObserver(applyClass);
+    obs.observe(document.body, { childList: true, subtree: true });
+    applyClass();
+})();
+</script>
 """, unsafe_allow_html=True)
 
 # ─── 3. PLOTLY CHART THEME ENGINE ──────────────────────────────────────────────
