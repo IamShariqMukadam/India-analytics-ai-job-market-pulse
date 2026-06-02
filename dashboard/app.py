@@ -44,37 +44,35 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE CLUTTER & NUKE CLOUD BADGES ─── */
+/* ─── 1. HIDE CLUTTER & FORCE VISIBILITY ─── */
 [data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    pointer-events: none !important;
+    pointer-events: none !important; /* Let clicks pass through the invisible header */
     z-index: 999990 !important;
 }
 
-/* Hide Streamlit cloud clutter AND the GitHub Badge */
-.viewerBadge_container, 
-.viewerBadge_link, 
+/* Force ALL wrapper divs in the header to be visible in case Streamlit strips their names */
+[data-testid="stHeader"] > div {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Specifically assassinate the Toolbar, Deploy Button, and injected GitHub Links */
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
 [data-testid="stStatusWidget"], 
 #MainMenu, 
 footer,
-/* This explicitly hides the injected GitHub icon */
-[data-testid="stHeader"] a[href*="github.com"] {
+[data-testid="stHeader"] a {
     display: none !important;
 }
 
-.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
-
 /* ─── 2. THE BULLETPROOF CYBERPUNK BUTTON ─── */
-/* Removed the broad div selector so it stops styling the GitHub badge */
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"] {
-    pointer-events: auto !important; 
+/* Target the literal HTML button inside the header. This ignores all Streamlit naming conventions. */
+[data-testid="stHeader"] button {
+    pointer-events: auto !important; /* Re-enable clicking for this button only */
     display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
     position: fixed !important;
     top: 20px !important;
     left: 20px !important;
@@ -85,14 +83,15 @@ footer,
     z-index: 999999 !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 2px solid #00F0FF !important; 
+    border: 2px solid #00F0FF !important; /* Permanent fallback border */
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
     overflow: hidden !important;
+    color: transparent !important; /* Hides default Streamlit text if any */
+    outline: none !important;
 }
 
-/* The Animated Border */
-[data-testid="collapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"]::before {
+/* The Animated Rotating Background Layer */
+[data-testid="stHeader"] button::before {
     content: '' !important;
     position: absolute !important;
     width: 250% !important; height: 250% !important;
@@ -107,37 +106,33 @@ footer,
     z-index: 0 !important;
 }
 
-/* The Inner Button Layer */
-[data-testid="collapsedControl"] button,
-[data-testid="stSidebarCollapsedControl"] button {
-    pointer-events: auto !important;
+/* The Inner Dark Cutout Layer */
+[data-testid="stHeader"] button::after {
+    content: '' !important;
     position: absolute !important;
-    inset: 3px !important;
-    z-index: 2 !important;
+    inset: 3px !important; /* This creates the 3px border width for the animation */
+    z-index: 1 !important;
     background: #0F172A !important;
-    border: none !important;
     border-radius: 9px !important;
-    width: calc(100% - 6px) !important;
-    height: calc(100% - 6px) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     transition: background 0.3s ease !important;
 }
 
-[data-testid="collapsedControl"] button:hover,
-[data-testid="stSidebarCollapsedControl"] button:hover {
+[data-testid="stHeader"] button:hover::after {
     background: #1E293B !important;
 }
 
-/* The SVG Icon */
-[data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapsedControl"] svg {
+[data-testid="stHeader"] button:focus {
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.8) !important;
+}
+
+/* Elevate and Color the actual SVG Icon */
+[data-testid="stHeader"] button svg {
     fill: #00F0FF !important;
     color: #00F0FF !important;
     width: 24px !important;
     height: 24px !important;
-    z-index: 3 !important;
+    z-index: 2 !important;
+    position: relative !important;
 }
 
 @keyframes border-trace {
