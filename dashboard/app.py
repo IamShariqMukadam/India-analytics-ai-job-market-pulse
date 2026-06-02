@@ -139,14 +139,14 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
-/* ─── MOBILE RESPONSIVENESS FIXES ─── */
+/* ─── MOBILE RESPONSIVENESS FIXES (ULTIMATE SCROLL FIX) ─── */
 @media (max-width: 768px) {
     .block-container { 
         padding: 1rem !important; 
         padding-bottom: 90px !important; /* Make room for bottom button */
     }
     /* Force structural stacking for columns */
-    [data-testid="stHorizontalBlock"] { flex-direction: column !important; gap: 15px !important; }
+    [data-testid="stHorizontalBlock"] { flex-direction: column !important; gap: 20px !important; }
     [data-testid="column"] { width: 100% !important; min-width: 100% !important; }
     
     /* Scale typography down */
@@ -155,8 +155,24 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
     .glass-card div[style*="font-size:3rem"] { font-size: 2rem !important; }
     .premium-header { padding: 20px 10px !important; }
     
-    /* Prevent horizontal overflow on charts/tables */
-    .js-plotly-plot, .plotly, .stPlotlyChart { width: 100% !important; }
+    /* 1. KILL THE EXPAND BUTTON: Stops accidental fullscreen taps */
+    [data-testid="StyledFullScreenButton"] {
+        display: none !important;
+        pointer-events: none !important;
+    }
+
+    /* 2. FIX SCROLL HIJACKING: Tells mobile browsers to scroll the page vertically over charts */
+    .stPlotlyChart { 
+        touch-action: pan-y !important; 
+        width: 100% !important; 
+    }
+    
+    /* 3. ADD "THUMB SAFE ZONES": Extra space between charts so you have room to grab the page */
+    .stPlotlyChart > div {
+        margin-bottom: 15px !important;
+    }
+    
+    /* Prevent horizontal overflow on tables */
     [data-testid="stDataFrame"] { overflow-x: auto !important; width: 100% !important; }
 }
 </style>
