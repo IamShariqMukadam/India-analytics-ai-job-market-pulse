@@ -21,6 +21,27 @@ st.set_page_config(
 # ─── 2. PREMIUM DARK GLASSMORPHISM CSS ─────────────────────────────────────────
 st.markdown("""
 <style>
+/* Force the new Streamlit sidebar collapse button to be visible and glowing cyan */
+[data-testid="stSidebarCollapseButton"] {
+    background-color: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    border-radius: 8px !important;
+    color: #00F0FF !important;
+    display: flex !important;
+    z-index: 999999 !important;
+}
+
+/* Ensure the hover state looks good */
+[data-testid="stSidebarCollapseButton"]:hover {
+    background-color: rgba(0, 240, 255, 0.1) !important;
+    border-color: #00F0FF !important;
+}
+
+/* Fix any modern slider container track visibility issues in dark mode */
+.stSlider [data-baseweb="slider"] {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+            
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
