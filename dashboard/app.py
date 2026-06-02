@@ -68,6 +68,23 @@ html, body, [class*="css"], .stApp {
 /* Hide Streamlit Clutter */
 #MainMenu, footer { visibility: hidden; }
 header { background: transparent !important; }
+[data-testid="stToolbar"] { visibility: hidden !important; }
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button,
+button[kind="headerNoPadding"] {
+    background: rgba(15, 23, 42, 0.9) !important;
+    border: 2px solid var(--cyan) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+    color: var(--cyan) !important;
+    width: 44px !important;
+    height: 44px !important;
+}
+[data-testid="stSidebarCollapsedControl"] button svg,
+[data-testid="collapsedControl"] button svg {
+    fill: var(--cyan) !important;
+    color: var(--cyan) !important;
+}
 [data-testid="collapsedControl"],
 button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; }
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
