@@ -12,14 +12,15 @@ DB_PATH = os.path.join(_here, "..", "data", "job_market.db")
 if not os.path.exists(DB_PATH):
     DB_PATH = os.path.join(os.getcwd(), "data", "job_market.db")
 
+# Changed page icon to a Suitcase 💼
 st.set_page_config(
     page_title="India Analytics Job Market Pulse",
-    page_icon="⚡", 
+    page_icon="💼", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ─── 2. PREMIUM DARK GLASSMORPHISM CSS (FLOATING BOTTOM MENU) ──────────────
+# ─── 2. PREMIUM DARK GLASSMORPHISM CSS & RESPONSIVENESS ────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -45,21 +46,20 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── GHOSTING THE NATIVE HEADER CLUTTER (PREVENTS REACT UNMOUNT) ─── */
+/* ─── GHOSTING THE NATIVE HEADER CLUTTER ─── */
 header[data-testid="stHeader"], .stAppHeader { 
     background: transparent !important; 
     box-shadow: none !important;
     pointer-events: none !important;
 }
 
-/* Make all native header buttons/clutter completely invisible and click-through */
+/* Hide native header buttons, toolbars, and menus */
 header[data-testid="stHeader"] button,
 header[data-testid="stHeader"] a,
 .stDeployButton, 
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
 [data-testid="stStatusWidget"], 
-.viewerBadge_container, 
 #MainMenu, 
 footer {
     opacity: 0 !important;
@@ -68,7 +68,20 @@ footer {
     position: absolute !important;
 }
 
-/* Permanently hide the native open/close tags so they don't clash with our bottom button */
+/* ─── MOVE STREAMLIT / GITHUB BADGE TO TOP RIGHT ─── */
+.viewerBadge_container {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    bottom: auto !important;
+    top: 15px !important;
+    right: 15px !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+}
+
+/* Permanently hide native toggles */
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarCollapseButton"] {
@@ -77,12 +90,9 @@ footer {
     pointer-events: none !important;
 }
 
-/* Nuke the empty iframe container layout box to clear the bottom-left artifact shape */
+/* Nuke the empty iframe container */
 iframe[title="streamlit_components.v1.html"] {
-    display: none !important;
-    position: absolute !important;
-    width: 0 !important;
-    height: 0 !important;
+    display: none !important; position: absolute !important; width: 0 !important; height: 0 !important;
 }
 
 .block-container { padding: 2rem 2.5rem 1.5rem 2.5rem !important; max-width: 100% !important; }
@@ -128,6 +138,27 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"] { background-color: rgba(15, 23, 42, 0.6) !important; border: 1px solid var(--cyan) !important; border-radius: 8px !important; transition: all 0.3s ease; }
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
+
+/* ─── MOBILE RESPONSIVENESS FIXES ─── */
+@media (max-width: 768px) {
+    .block-container { 
+        padding: 1rem !important; 
+        padding-bottom: 90px !important; /* Make room for bottom button */
+    }
+    /* Force structural stacking for columns */
+    [data-testid="stHorizontalBlock"] { flex-direction: column !important; gap: 15px !important; }
+    [data-testid="column"] { width: 100% !important; min-width: 100% !important; }
+    
+    /* Scale typography down */
+    .title-glow { font-size: 1.5rem !important; line-height: 1.3 !important; }
+    .kpi-value { font-size: 1.6rem !important; }
+    .glass-card div[style*="font-size:3rem"] { font-size: 2rem !important; }
+    .premium-header { padding: 20px 10px !important; }
+    
+    /* Prevent horizontal overflow on charts/tables */
+    .js-plotly-plot, .plotly, .stPlotlyChart { width: 100% !important; }
+    [data-testid="stDataFrame"] { overflow-x: auto !important; width: 100% !important; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -137,16 +168,15 @@ components.html("""
 (function() {
     const doc = window.parent.document;
     
-    // Clean look hot-reloads setup
     if (doc.getElementById('cyber-toggle-btn')) return;
 
-    // Create custom master controller floating element
+    // Create custom master controller floating element with SUITCASE ICON
     const btn = doc.createElement('div');
     btn.id = 'cyber-toggle-btn';
     btn.innerHTML = `
         <div class="cyber-inner">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="#00F0FF">
-                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#00F0FF">
+                <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
             </svg>
         </div>
     `;
@@ -164,11 +194,12 @@ components.html("""
             background: #0F172A;
             z-index: 99999999 !important;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: transform 0.2s ease;
+            overflow: hidden !important; /* CRITICAL FIX: This makes it a tracing line instead of a huge square! */
         }
         #cyber-toggle-btn:active {
             transform: scale(0.92);
@@ -206,13 +237,11 @@ components.html("""
     `;
     doc.head.appendChild(style);
 
-    // Smart Toggle Execution Loop Flow logic rules mapping
+    // Smart Toggle Execution Loop
     btn.onclick = function() {
-        // Look for modern expanded sidebar close button nodes
         const closeControl = doc.querySelector('[data-testid="stSidebarCollapseButton"] button') || 
                              doc.querySelector('[data-testid="stSidebarCollapseButton"]');
                              
-        // Look for collapsed header open button nodes
         const openControl = doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') || 
                             doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
                             doc.querySelector('[data-testid="collapsedControl"] button');
@@ -222,7 +251,6 @@ components.html("""
         } else if (openControl) {
             openControl.click();
         } else {
-            // Ultimate fallback route if selectors drift
             const fallbackHeaderBtn = doc.querySelector('header button');
             if (fallbackHeaderBtn) fallbackHeaderBtn.click();
         }
