@@ -19,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── 2. PREMIUM DARK GLASSMORPHISM CSS & FLOATING MENU (EXTREME MEASURE) ──────
+# ─── 2. PREMIUM DARK GLASSMORPHISM CSS (FLOATING BOTTOM MENU) ──────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -45,17 +45,46 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* Make Header Transparent & Hide Cloud Clutter */
-header[data-testid="stHeader"] { 
+/* ─── GHOSTING THE NATIVE HEADER CLUTTER (PREVENTS REACT UNMOUNT) ─── */
+header[data-testid="stHeader"], .stAppHeader { 
     background: transparent !important; 
     box-shadow: none !important;
+    pointer-events: none !important;
 }
+
+/* Make all native header buttons/clutter completely invisible and click-through */
+header[data-testid="stHeader"] button,
+header[data-testid="stHeader"] a,
 .stDeployButton, 
-[data-testid="stHeader"] a, 
+[data-testid="stToolbar"], 
+[data-testid="stDecoration"], 
+[data-testid="stStatusWidget"], 
+.viewerBadge_container, 
 #MainMenu, 
 footer {
-    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    position: absolute !important;
 }
+
+/* Permanently hide the native open/close tags so they don't clash with our bottom button */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"] {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Nuke the empty iframe container layout box to clear the bottom-left artifact shape */
+iframe[title="streamlit_components.v1.html"] {
+    display: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
 .block-container { padding: 2rem 2.5rem 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
@@ -102,45 +131,47 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 </style>
 """, unsafe_allow_html=True)
 
-# ─── THE JAVASCRIPT DOM ESCAPE HATCH ───
-# This completely bypasses Streamlit's React Engine to build a permanent floating button.
+# ─── THE JAVASCRIPT DOM ESCAPE HATCH (INTELLIGENT CLICK ROUTING) ───
 components.html("""
 <script>
 (function() {
     const doc = window.parent.document;
     
-    // Prevent duplicate buttons on hot-reloads
+    // Clean look hot-reloads setup
     if (doc.getElementById('cyber-toggle-btn')) return;
 
-    // Build the Floating Action Button
+    // Create custom master controller floating element
     const btn = doc.createElement('div');
     btn.id = 'cyber-toggle-btn';
     btn.innerHTML = `
         <div class="cyber-inner">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#00F0FF">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="#00F0FF">
                 <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
             </svg>
         </div>
     `;
 
-    // Inject CSS directly into the main document head to style our custom button
-    // AND permanently hide Streamlit's native header toggle
+    // Inject styles directly onto window root head layer
     const style = doc.createElement('style');
     style.innerHTML = `
         #cyber-toggle-btn {
             position: fixed;
-            bottom: 25px;
-            left: 25px;
-            width: 56px;
-            height: 56px;
+            bottom: 30px;
+            left: 30px;
+            width: 54px;
+            height: 54px;
             border-radius: 12px;
             background: #0F172A;
-            z-index: 99999999;
+            z-index: 99999999 !important;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        #cyber-toggle-btn:active {
+            transform: scale(0.92);
         }
         #cyber-toggle-btn::before {
             content: '';
@@ -172,27 +203,31 @@ components.html("""
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        /* Permanently hide Streamlit's native toggles */
-        [data-testid="collapsedControl"],
-        [data-testid="stSidebarCollapsedControl"],
-        [data-testid="stSidebarCollapseButton"] {
-            display: none !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
     `;
     doc.head.appendChild(style);
 
-    // Click Logic: Find the invisible native Streamlit button and secretly click it
+    // Smart Toggle Execution Loop Flow logic rules mapping
     btn.onclick = function() {
-        const stBtn = doc.querySelector('[data-testid="collapsedControl"]') ||
-                      doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
-                      doc.querySelector('[data-testid="stSidebarCollapseButton"]');
-        if (stBtn) stBtn.click();
+        // Look for modern expanded sidebar close button nodes
+        const closeControl = doc.querySelector('[data-testid="stSidebarCollapseButton"] button') || 
+                             doc.querySelector('[data-testid="stSidebarCollapseButton"]');
+                             
+        // Look for collapsed header open button nodes
+        const openControl = doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') || 
+                            doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
+                            doc.querySelector('[data-testid="collapsedControl"] button');
+
+        if (closeControl && closeControl.getBoundingClientRect().width > 0) {
+            closeControl.click();
+        } else if (openControl) {
+            openControl.click();
+        } else {
+            // Ultimate fallback route if selectors drift
+            const fallbackHeaderBtn = doc.querySelector('header button');
+            if (fallbackHeaderBtn) fallbackHeaderBtn.click();
+        }
     };
 
-    // Append to the absolute root body so it ignores Streamlit's clipped containers
     doc.body.appendChild(btn);
 })();
 </script>
