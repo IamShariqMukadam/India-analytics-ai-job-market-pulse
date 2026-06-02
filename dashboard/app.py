@@ -114,29 +114,153 @@ header[data-testid="stHeader"] {
     100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
 }
 
-/* ─── BULLETPROOF CYBERPUNK BUTTON (NO GLOW, JUST CLEAN UI) ─── */
-/* Targets both the collapsed header button and expanded sidebar button */
+/* ─── ANIMATED SIDEBAR TOGGLE — UNIVERSAL FIX (BULLETPROOF v2) ─── */
+/* Cross-version selector coverage: Streamlit 1.28 → 1.40+. The button's
+   data-testid changed from "collapsedControl"/"stSidebarCollapsedControl"
+   (1.32) to "stBaseButton-headerNoPadding" + kind="headerNoPadding" on
+   newer versions used by Streamlit Cloud — so we target ALL of them. */
+[data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarCollapseButton"] {
-    background-color: #0F172A !important;
-    border: 1px solid #00F0FF !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
+[data-testid="stSidebarCollapseButton"],
+[data-testid="baseButton-headerNoPadding"],
+[data-testid="stBaseButton-headerNoPadding"],
+[data-testid="stToolbarActions"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
     z-index: 999999 !important;
 }
 
-/* Force the SVG icon to be cyan */
-[data-testid="stSidebarCollapsedControl"] svg,
-[data-testid="stSidebarCollapseButton"] svg {
-    fill: #00F0FF !important;
-    color: #00F0FF !important;
+/* ── THE BUTTON ITSELF ── */
+[data-testid="collapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapseButton"] button,
+[data-testid="baseButton-headerNoPadding"],
+[data-testid="stBaseButton-headerNoPadding"],
+button[kind="header"],
+button[kind="headerNoPadding"],
+header button,
+.gsk-anim-toggle {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #0F172A !important;
+    border: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    isolation: isolate !important;   /* own stacking context — fixes z-index on cloud */
+    margin: 6px !important;
+    cursor: pointer !important;
 }
 
-/* Hover effect */
-[data-testid="stSidebarCollapsedControl"]:hover,
-[data-testid="stSidebarCollapseButton"]:hover {
-    background-color: #1E293B !important;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4) !important;
+/* Layer 0: spinning conic gradient border (pointer-events:none so it never blocks clicks) */
+[data-testid="collapsedControl"] button::before,
+[data-testid="stSidebarCollapsedControl"] button::before,
+[data-testid="stSidebarCollapseButton"]::before,
+[data-testid="stSidebarCollapseButton"] button::before,
+[data-testid="baseButton-headerNoPadding"]::before,
+[data-testid="stBaseButton-headerNoPadding"]::before,
+button[kind="header"]::before,
+button[kind="headerNoPadding"]::before,
+header button::before,
+.gsk-anim-toggle::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 200% !important;
+    height: 200% !important;
+    top: -50% !important;
+    left: -50% !important;
+    background: conic-gradient(
+        transparent 0deg, transparent 240deg,
+        rgba(0,240,255,0.9) 240deg, #3B82F6 360deg
+    ) !important;
+    animation: border-trace 2s linear infinite !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    border-radius: 0 !important;
+}
+
+/* Layer 1: dark inner cutout */
+[data-testid="collapsedControl"] button::after,
+[data-testid="stSidebarCollapsedControl"] button::after,
+[data-testid="stSidebarCollapseButton"]::after,
+[data-testid="stSidebarCollapseButton"] button::after,
+[data-testid="baseButton-headerNoPadding"]::after,
+[data-testid="stBaseButton-headerNoPadding"]::after,
+button[kind="header"]::after,
+button[kind="headerNoPadding"]::after,
+header button::after,
+.gsk-anim-toggle::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 2px !important;
+    left: 2px !important;
+    right: 2px !important;
+    bottom: 2px !important;
+    background: #0F172A !important;
+    border-radius: 10px !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+}
+
+/* Layer 2: SVG icon on top of everything */
+[data-testid="collapsedControl"] button svg,
+[data-testid="stSidebarCollapsedControl"] button svg,
+[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="stSidebarCollapseButton"] button svg,
+[data-testid="baseButton-headerNoPadding"] svg,
+[data-testid="stBaseButton-headerNoPadding"] svg,
+button[kind="header"] svg,
+button[kind="headerNoPadding"] svg,
+header button svg,
+.gsk-anim-toggle svg {
+    fill: #00F0FF !important;
+    color: #00F0FF !important;
+    stroke: #00F0FF !important;
+    position: relative !important;
+    z-index: 5 !important;
+    width: 20px !important;
+    height: 20px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    pointer-events: none !important;
+}
+
+/* Inner div wrapper Streamlit sometimes inserts around the SVG */
+[data-testid="collapsedControl"] button > div,
+[data-testid="stSidebarCollapsedControl"] button > div,
+[data-testid="stSidebarCollapseButton"] > div,
+[data-testid="stSidebarCollapseButton"] button > div,
+[data-testid="baseButton-headerNoPadding"] > div,
+[data-testid="stBaseButton-headerNoPadding"] > div,
+button[kind="header"] > div,
+button[kind="headerNoPadding"] > div,
+header button > div,
+.gsk-anim-toggle > div {
+    position: relative !important;
+    z-index: 5 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: none !important;
+}
+
+@keyframes border-trace {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 
@@ -196,6 +320,188 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 </style>
 """, unsafe_allow_html=True)
+
+import streamlit.components.v1 as components
+
+# ─── JS FIX: sidebar toggle animation via iframe (BULLETPROOF — runs in parent doc) ──
+# CRITICAL for Streamlit Cloud: cloud runs a newer Streamlit (>=1.36) where the
+# toggle button's data-testid is "stBaseButton-headerNoPadding" (was
+# "collapsedControl" / "stSidebarCollapsedControl" on 1.32). Since React
+# re-mounts the button on every sidebar open/close, we use a MutationObserver
+# to ALWAYS tag the toggle with a stable `.gsk-anim-toggle` class regardless
+# of which data-testid Streamlit happens to use today or tomorrow.
+components.html("""
+<script>
+(function() {
+    // We're inside an iframe — reach into the parent Streamlit doc.
+    const doc = window.parent.document;
+
+    // ─── 1. Inject the toggle CSS directly into parent doc <head> ────────────
+    // (belt + suspenders alongside the st.markdown CSS — JS-injected styles
+    // survive any future scoping Streamlit might apply to st.markdown HTML)
+    if (!doc.getElementById('gsk-toggle-anim-style')) {
+        const s = doc.createElement('style');
+        s.id = 'gsk-toggle-anim-style';
+        s.textContent = `
+            [data-testid="stHeader"],
+            header[data-testid="stHeader"],
+            header.stAppHeader,
+            .stAppHeader,
+            header {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                background: transparent !important;
+                z-index: 999999 !important;
+                pointer-events: auto !important;
+            }
+            [data-testid="collapsedControl"],
+            [data-testid="stSidebarCollapsedControl"],
+            [data-testid="stSidebarCollapseButton"],
+            [data-testid="baseButton-headerNoPadding"],
+            [data-testid="stBaseButton-headerNoPadding"],
+            [data-testid="stToolbarActions"] {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                z-index: 999999 !important;
+            }
+            .gsk-anim-toggle {
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 44px !important;
+                height: 44px !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
+                border-radius: 12px !important;
+                overflow: hidden !important;
+                background: #0F172A !important;
+                border: none !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                isolation: isolate !important;
+                margin: 6px !important;
+                cursor: pointer !important;
+            }
+            .gsk-anim-toggle::before {
+                content: '' !important;
+                position: absolute !important;
+                width: 200% !important;
+                height: 200% !important;
+                top: -50% !important;
+                left: -50% !important;
+                background: conic-gradient(
+                    transparent 0deg, transparent 240deg,
+                    rgba(0,240,255,0.9) 240deg, #3B82F6 360deg
+                ) !important;
+                animation: gsk-border-trace 2s linear infinite !important;
+                z-index: 0 !important;
+                pointer-events: none !important;
+                border-radius: 0 !important;
+            }
+            .gsk-anim-toggle::after {
+                content: '' !important;
+                position: absolute !important;
+                top: 2px !important;
+                left: 2px !important;
+                right: 2px !important;
+                bottom: 2px !important;
+                background: #0F172A !important;
+                border-radius: 10px !important;
+                z-index: 1 !important;
+                pointer-events: none !important;
+            }
+            .gsk-anim-toggle svg {
+                fill: #00F0FF !important;
+                color: #00F0FF !important;
+                stroke: #00F0FF !important;
+                position: relative !important;
+                z-index: 5 !important;
+                width: 20px !important;
+                height: 20px !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                display: block !important;
+                pointer-events: none !important;
+            }
+            .gsk-anim-toggle > div,
+            .gsk-anim-toggle > span {
+                position: relative !important;
+                z-index: 5 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                pointer-events: none !important;
+            }
+            @keyframes gsk-border-trace {
+                0%   { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        doc.head.appendChild(s);
+    }
+
+    // ─── 2. Find the toggle button across ALL Streamlit versions ─────────────
+    function findToggleButton() {
+        const selectors = [
+            '[data-testid="stSidebarCollapseButton"] button',
+            '[data-testid="stSidebarCollapseButton"]',
+            '[data-testid="stSidebarCollapsedControl"] button',
+            '[data-testid="stSidebarCollapsedControl"]',
+            '[data-testid="collapsedControl"] button',
+            '[data-testid="collapsedControl"]',
+            '[data-testid="stBaseButton-headerNoPadding"]',
+            '[data-testid="baseButton-headerNoPadding"]',
+            'button[kind="headerNoPadding"]',
+            'button[kind="header"]',
+            'header button'
+        ];
+        for (const sel of selectors) {
+            const el = doc.querySelector(sel);
+            if (el) {
+                if (el.tagName === 'BUTTON') return el;
+                const inner = el.querySelector('button');
+                if (inner) return inner;
+                return el;
+            }
+        }
+        return null;
+    }
+
+    function applyClass() {
+        const btn = findToggleButton();
+        if (btn && !btn.classList.contains('gsk-anim-toggle')) {
+            btn.classList.add('gsk-anim-toggle');
+        }
+        // Force every ancestor container visible (Streamlit's inline styles can hide them)
+        const containers = doc.querySelectorAll(
+            '[data-testid="stHeader"],' +
+            '[data-testid="stSidebarCollapseButton"],' +
+            '[data-testid="stSidebarCollapsedControl"],' +
+            '[data-testid="collapsedControl"]'
+        );
+        containers.forEach(c => {
+            c.style.setProperty('visibility', 'visible', 'important');
+            c.style.setProperty('opacity', '1', 'important');
+            c.style.setProperty('display', c.tagName === 'HEADER' ? 'block' : 'flex', 'important');
+            c.style.setProperty('pointer-events', 'auto', 'important');
+        });
+    }
+
+    // ─── 3. Watch the DOM forever — Streamlit re-mounts on rerun & sidebar toggle ──
+    const obs = new MutationObserver(applyClass);
+    obs.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'data-testid'] });
+
+    // Catch the button before, during, and after React hydration
+    applyClass();
+    [50, 150, 300, 600, 1000, 2000, 3500, 5000].forEach(ms => setTimeout(applyClass, ms));
+})();
+</script>
+""", height=0, width=0)
 
 # ─── 3. PLOTLY CHART THEME ENGINE ──────────────────────────────────────────────
 def fancy_layout(h=380):
