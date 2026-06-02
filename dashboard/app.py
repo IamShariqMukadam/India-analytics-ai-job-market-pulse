@@ -65,164 +65,211 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* Hide Streamlit Clutter */
-#MainMenu, footer { visibility: hidden; }
-header { background: transparent !important; }
-[data-testid="stToolbar"] { visibility: hidden !important; }
-[data-testid="stSidebarCollapsedControl"] button,
-[data-testid="collapsedControl"] button,
-button[kind="headerNoPadding"] {
-    background: rgba(15, 23, 42, 0.9) !important;
-    border: 2px solid var(--cyan) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
-    color: var(--cyan) !important;
-    width: 44px !important;
-    height: 44px !important;
-}
-[data-testid="stSidebarCollapsedControl"] button svg,
-[data-testid="collapsedControl"] button svg {
-    fill: var(--cyan) !important;
-    color: var(--cyan) !important;
-}
-[data-testid="collapsedControl"],
-button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; }
-.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
-[data-testid="stSidebar"] {
-    display: flex !important;
-    visibility: visible !important;
-}
-            
-/* ─── FANCY HEADER ─── */
-.premium-header {
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-glow);
-    border-radius: 16px;
-    padding: 30px;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-.title-glow {
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-}
-.title-glow span {
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.live-pulse {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid var(--cyan);
-    color: var(--cyan);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-top: 15px;
-    letter-spacing: 2px;
-}
-.pulse-dot {
-    width: 8px;
-    height: 8px;
-    background-color: var(--cyan);
-    border-radius: 50%;
-    animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
-}
-
-/* ─── GLASSMORPHISM METRIC CARDS (WITH TOP BORDER) ─── */
-.glass-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-top: 3px solid var(--cyan) !important; /* Added thick top border */
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
-}
-.glass-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--border-glow);
-    box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.15);
-}
-.kpi-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
-.kpi-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.1;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
-.kpi-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 8px;
-    font-weight: 600;
-}
-
-/* ─── SECTION HEADERS (GRADIENT TEXT) ─── */
-.fancy-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 40px 0 20px 0; }
-.section-title { 
-    display: flex; align-items: center; gap: 12px; font-size: 1.25rem; 
-    font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; 
-}
-.section-title span {
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* ─── BULLETPROOF TOGGLE & MOBILE RESPONSIVENESS ─── */
+/* ─── 1. NUKE THE UGLY HEADER BUT KEEP IT TRANSPARENT ─── */
 header[data-testid="stHeader"] {
     background: transparent !important;
-    z-index: 999999 !important;
-    pointer-events: none !important; /* Prevents invisible header from blocking clicks */
-}
-header[data-testid="stHeader"] button {
-    pointer-events: auto !important; /* Keeps button clickable */
-    background: rgba(15, 23, 42, 0.95) !important;
-    border: 2px solid #00F0FF !important;
-    border-radius: 10px !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
-    margin: 15px !important;
-    visibility: visible !important;
-}
-header[data-testid="stHeader"] button svg {
-    fill: #00F0FF !important;
-    color: #00F0FF !important;
+    box-shadow: none !important;
+    pointer-events: none !important; /* Lets you click through the invisible header */
 }
 
-/* MOBILE RESPONSIVENESS */
+/* ─── 2. HIDE THE SHARE/DEPLOY MENU COMPLETELY ─── */
+[data-testid="stToolbar"], #MainMenu, footer { 
+    display: none !important; 
+}
+
+/* ─── 3. THE FLOATING CYBERPUNK BUTTON ─── */
+[data-testid="collapsedControl"], 
+[data-testid="stSidebarCollapsedControl"] {
+    pointer-events: auto !important; /* Re-enables clicking for just the button */
+    display: flex !important;
+    position: fixed !important;
+    top: 20px !important;
+    left: 20px !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: #0F172A !important;
+    border: 2px solid #00F0FF !important;
+    border-radius: 12px !important;
+    z-index: 999999 !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-testid="collapsedControl"] svg {
+    fill: #00F0FF !important;
+    color: #00F0FF !important;
+    width: 24px !important;
+    height: 24px !important;
+}
+
+/* ─── 4. MOBILE RESPONSIVENESS ─── */
 @media (max-width: 768px) {
-    .block-container { padding: 1rem !important; }
+    .block-container { padding: 1rem !important; margin-top: 50px !important; }
     .title-glow { font-size: 1.6rem !important; }
-    .premium-header { padding: 15px !important; }
+    .premium-header { padding: 15px !important; margin-bottom: 15px !important; }
     .kpi-value { font-size: 1.5rem !important; }
     .glass-card { padding: 15px !important; margin-bottom: 10px !important; }
-    /* Force Streamlit columns to stack vertically on small screens */
-    div[data-testid="column"] { min-width: 100% !important; } 
 }
+            
+# /* Hide Streamlit Clutter */
+# #MainMenu, footer { visibility: hidden; }
+# header { background: transparent !important; }
+# [data-testid="stToolbar"] { visibility: hidden !important; }
+# [data-testid="stSidebarCollapsedControl"] button,
+# [data-testid="collapsedControl"] button,
+# button[kind="headerNoPadding"] {
+#     background: rgba(15, 23, 42, 0.9) !important;
+#     border: 2px solid var(--cyan) !important;
+#     border-radius: 12px !important;
+#     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+#     color: var(--cyan) !important;
+#     width: 44px !important;
+#     height: 44px !important;
+# }
+# [data-testid="stSidebarCollapsedControl"] button svg,
+# [data-testid="collapsedControl"] button svg {
+#     fill: var(--cyan) !important;
+#     color: var(--cyan) !important;
+# }
+# [data-testid="collapsedControl"],
+# button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; }
+# .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
+# [data-testid="stSidebar"] {
+#     display: flex !important;
+#     visibility: visible !important;
+# }
+            
+# /* ─── FANCY HEADER ─── */
+# .premium-header {
+#     background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
+#     backdrop-filter: blur(12px);
+#     -webkit-backdrop-filter: blur(12px);
+#     border-bottom: 1px solid var(--border-glow);
+#     border-radius: 16px;
+#     padding: 30px;
+#     text-align: center;
+#     margin-bottom: 30px;
+#     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+# }
+# .title-glow {
+#     font-size: 2.2rem;
+#     font-weight: 800;
+#     background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
+#     -webkit-background-clip: text;
+#     -webkit-text-fill-color: transparent;
+#     letter-spacing: 1px;
+# }
+# .title-glow span {
+#     background: linear-gradient(90deg, var(--cyan), var(--magenta));
+#     -webkit-background-clip: text;
+#     -webkit-text-fill-color: transparent;
+# }
+# .live-pulse {
+#     display: inline-flex;
+#     align-items: center;
+#     gap: 8px;
+#     background: rgba(0, 240, 255, 0.1);
+#     border: 1px solid var(--cyan);
+#     color: var(--cyan);
+#     padding: 4px 12px;
+#     border-radius: 20px;
+#     font-size: 0.8rem;
+#     font-weight: 600;
+#     margin-top: 15px;
+#     letter-spacing: 2px;
+# }
+# .pulse-dot {
+#     width: 8px;
+#     height: 8px;
+#     background-color: var(--cyan);
+#     border-radius: 50%;
+#     animation: pulse 1.5s infinite;
+# }
+# @keyframes pulse {
+#     0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
+#     70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
+#     100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+# }
+
+# /* ─── GLASSMORPHISM METRIC CARDS (WITH TOP BORDER) ─── */
+# .glass-card {
+#     background: var(--card-bg);
+#     backdrop-filter: blur(16px);
+#     -webkit-backdrop-filter: blur(16px);
+#     border: 1px solid rgba(255, 255, 255, 0.05);
+#     border-top: 3px solid var(--cyan) !important; /* Added thick top border */
+#     border-radius: 16px;
+#     padding: 24px;
+#     text-align: center;
+#     transition: all 0.3s ease;
+#     box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+# }
+# .glass-card:hover {
+#     transform: translateY(-5px);
+#     border-color: var(--border-glow);
+#     box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.15);
+# }
+# .kpi-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
+# .kpi-value {
+#     font-family: 'JetBrains Mono', monospace;
+#     font-size: 2rem;
+#     font-weight: 700;
+#     color: var(--text-primary);
+#     line-height: 1.1;
+#     text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+# }
+# .kpi-label {
+#     font-size: 0.8rem;
+#     color: var(--text-muted);
+#     text-transform: uppercase;
+#     letter-spacing: 1px;
+#     margin-top: 8px;
+#     font-weight: 600;
+# }
+
+# /* ─── SECTION HEADERS (GRADIENT TEXT) ─── */
+# .fancy-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 40px 0 20px 0; }
+# .section-title { 
+#     display: flex; align-items: center; gap: 12px; font-size: 1.25rem; 
+#     font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; 
+# }
+# .section-title span {
+#     background: linear-gradient(90deg, var(--cyan), var(--magenta));
+#     -webkit-background-clip: text;
+#     -webkit-text-fill-color: transparent;
+# }
+
+# /* ─── BULLETPROOF TOGGLE & MOBILE RESPONSIVENESS ─── */
+# header[data-testid="stHeader"] {
+#     background: transparent !important;
+#     z-index: 999999 !important;
+#     pointer-events: none !important; /* Prevents invisible header from blocking clicks */
+# }
+# header[data-testid="stHeader"] button {
+#     pointer-events: auto !important; /* Keeps button clickable */
+#     background: rgba(15, 23, 42, 0.95) !important;
+#     border: 2px solid #00F0FF !important;
+#     border-radius: 10px !important;
+#     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+#     margin: 15px !important;
+#     visibility: visible !important;
+# }
+# header[data-testid="stHeader"] button svg {
+#     fill: #00F0FF !important;
+#     color: #00F0FF !important;
+# }
+
+# /* MOBILE RESPONSIVENESS */
+# @media (max-width: 768px) {
+#     .block-container { padding: 1rem !important; }
+#     .title-glow { font-size: 1.6rem !important; }
+#     .premium-header { padding: 15px !important; }
+#     .kpi-value { font-size: 1.5rem !important; }
+#     .glass-card { padding: 15px !important; margin-bottom: 10px !important; }
+#     /* Force Streamlit columns to stack vertically on small screens */
+#     div[data-testid="column"] { min-width: 100% !important; } 
+# }
 
 # /* Force the arrow icon inside to be cyan and perfectly sized */
 # [data-testid="collapsedControl"] svg,
