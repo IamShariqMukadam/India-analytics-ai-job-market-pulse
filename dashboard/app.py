@@ -12,7 +12,6 @@ DB_PATH = os.path.join(_here, "..", "data", "job_market.db")
 if not os.path.exists(DB_PATH):
     DB_PATH = os.path.join(os.getcwd(), "data", "job_market.db")
 
-# Changed page icon to a Suitcase 💼
 st.set_page_config(
     page_title="India Analytics Job Market Pulse",
     page_icon="💼", 
@@ -155,25 +154,33 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
     .glass-card div[style*="font-size:3rem"] { font-size: 2rem !important; }
     .premium-header { padding: 20px 10px !important; }
     
-    /* 1. KILL THE EXPAND BUTTON: Stops accidental fullscreen taps */
-    [data-testid="StyledFullScreenButton"] {
+    /* 1. AGGRESSIVELY KILL ALL STREAMLIT EXPAND BUTTONS & TOOLBARS ON MOBILE */
+    [data-testid="StyledFullScreenButton"],
+    [data-testid="stElementToolbarButton"],
+    [data-testid="stElementToolbar"],
+    button[title="View fullscreen"] {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
         pointer-events: none !important;
     }
 
-    /* 2. FIX SCROLL HIJACKING: Tells mobile browsers to scroll the page vertically over charts */
-    .stPlotlyChart { 
+    /* 2. FORCE BROWSER TO IGNORE PLOTLY PANNING AND PRIORITIZE VERTICAL SCROLLING */
+    [data-testid="stPlotlyChart"], 
+    .stPlotlyChart, 
+    .js-plotly-plot, 
+    .plotly {
         touch-action: pan-y !important; 
-        width: 100% !important; 
+        width: 100% !important;
     }
     
-    /* 3. ADD "THUMB SAFE ZONES": Extra space between charts so you have room to grab the page */
-    .stPlotlyChart > div {
-        margin-bottom: 15px !important;
+    /* 3. ADD "THUMB SAFE ZONES" SO YOU HAVE SPACE TO SCROLL BETWEEN CHARTS */
+    [data-testid="stPlotlyChart"] {
+        padding-bottom: 25px !important;
     }
     
     /* Prevent horizontal overflow on tables */
-    [data-testid="stDataFrame"] { overflow-x: auto !important; width: 100% !important; }
+    [data-testid="stDataFrame"] { overflow-x: auto !important; width: 100% !important; margin-bottom: 25px !important; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -191,8 +198,8 @@ components.html("""
     btn.id = 'cyber-toggle-btn';
     btn.innerHTML = `
         <div class="cyber-inner">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="#00F0FF">
-                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#00F0FF">
+                <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
             </svg>
         </div>
     `;
@@ -215,7 +222,7 @@ components.html("""
             align-items: center;
             justify-content: center;
             transition: transform 0.2s ease;
-            overflow: hidden !important; /* CRITICAL FIX: This makes it a tracing line instead of a huge square! */
+            overflow: hidden !important; 
         }
         #cyber-toggle-btn:active {
             transform: scale(0.92);
@@ -291,9 +298,12 @@ def fancy_layout(h=380):
         yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8')),
         hoverlabel=dict(bgcolor='rgba(15, 23, 42, 0.9)', bordercolor='#00F0FF', font=dict(family='JetBrains Mono')),
         legend=dict(font=dict(color='#F8FAFC'), bgcolor='rgba(0,0,0,0)'),
+        dragmode=False, # PUNCH 2: Completely disables panning/zooming on mobile
     )
 
 COLORS = ['#00F0FF', '#FF2D7E', '#7C3AED', '#00FF9D', '#FFD740', '#FF6B35', '#38BDF8', '#F472B6']
+# PUNCH 2: Global Plotly config to hide the toolbar
+PLOTLY_CONFIG = {'displayModeBar': False}
 
 # ─── 4. DATA LOADER ────────────────────────────────────────────────────────────
 @st.cache_data(ttl=1800, show_spinner=False)
@@ -408,7 +418,7 @@ with col1:
         L = fancy_layout(500); L['title'] = "Top 20 Skills Demanded"
         fig.update_layout(**L)
         L['xaxis_title'] = "Number of Mentions in Job Postings"
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, config=PLOTLY_CONFIG)
 
 with col2:
     if not sk_filt.empty:
@@ -425,7 +435,7 @@ with col2:
         L2 = fancy_layout(500); L2['title'] = "Weekly Velocity — Top 8 Skills"
         L2['legend'] = dict(orientation='h', y=-0.2)
         fig2.update_layout(**L2)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True, config=PLOTLY_CONFIG)
 
 # BI Tool Matchup
 if not sk_filt.empty:
@@ -443,7 +453,7 @@ if not sk_filt.empty:
             fig3.update_layout(**L3)
             L3['xaxis'] = dict(tickangle=-45, nticks=10, gridcolor='rgba(255,255,255,0.05)')
             L3['yaxis_title'] = "Weekly Mentions"
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, use_container_width=True, config=PLOTLY_CONFIG)
         with cb:
             pb = bi[bi.skill=="power bi"]["mention_count"].sum()
             tb = bi[bi.skill=="tableau"]["mention_count"].sum()
@@ -468,7 +478,7 @@ with col3:
         ))
         L4 = fancy_layout(320); L4['title'] = "Job Volume by Hub"
         fig4.update_layout(**L4)
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
 
 with col4:
     if not role_df.empty:
@@ -480,7 +490,7 @@ with col4:
         ))
         L7 = fancy_layout(320); L7['title'] = "Role Category Split"; L7['showlegend'] = False
         fig7.update_layout(**L7)
-        st.plotly_chart(fig7, use_container_width=True)
+        st.plotly_chart(fig7, use_container_width=True, config=PLOTLY_CONFIG)
 
 # City Intelligence Matrix
 if not city_df.empty:
@@ -514,7 +524,7 @@ with col5:
         L6 = fancy_layout(450); L6['title'] = "Top 15 Hiring Companies"
         L6['xaxis_title'] = "Total Active Job Openings" 
         fig6.update_layout(**L6)
-        st.plotly_chart(fig6, use_container_width=True)
+        st.plotly_chart(fig6, use_container_width=True, config=PLOTLY_CONFIG)
 
 with col6:
     if not filt.empty:
@@ -538,7 +548,7 @@ with col6:
         )
         
         fig8.update_layout(**L8)
-        st.plotly_chart(fig8, use_container_width=True)
+        st.plotly_chart(fig8, use_container_width=True, config=PLOTLY_CONFIG)
 
 # ─── ADVANCED CORRELATION ANALYTICS ────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🧬 <span>Multivariate Analysis</span></div>', unsafe_allow_html=True)
@@ -570,7 +580,7 @@ with col7:
         L_hm['xaxis'] = dict(tickangle=-45, gridcolor='rgba(255,255,255,0)')
         L_hm['yaxis'] = dict(gridcolor='rgba(255,255,255,0)')
         fig_hm.update_layout(**L_hm)
-        st.plotly_chart(fig_hm, use_container_width=True)
+        st.plotly_chart(fig_hm, use_container_width=True, config=PLOTLY_CONFIG)
 
 with col8:
     # 2. SALARY SPREAD BY ROLE (BOX PLOT)
@@ -595,7 +605,7 @@ with col8:
         L_box['yaxis_title'] = "Minimum Salary (LPA)"
         L_box['showlegend'] = False 
         fig_box.update_layout(**L_box)
-        st.plotly_chart(fig_box, use_container_width=True)
+        st.plotly_chart(fig_box, use_container_width=True, config=PLOTLY_CONFIG)
 
 # ─── PLATFORM BREAKDOWN ────────────────────────────────────────────────────────
 st.markdown('<div class="section-title" style="margin-top: 20px;">🌐 <span>Platform Breakdown</span></div>', unsafe_allow_html=True)
