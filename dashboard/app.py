@@ -288,61 +288,6 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] input {
     color: var(--text-primary) !important;
 }
-
-/* ─── SLIDER THUMB NUCLEAR FIX ─────────────────────────────────────────────────
-   ROOT CAUSE: The rule `[class*="css"] { background-color: #05050A !important }`
-   above matches the slider thumb's auto-generated class names (css-xxxxxxx),
-   painting it near-black and making it invisible on the dark background.
-   FIX: Reset all backgrounds inside stSlider to transparent (higher specificity
-   wins with !important), then paint the thumb an explicit visible colour.
-─────────────────────────────────────────────────────────────────────────────── */
-
-/* Step 1 — Kill the dark background inside every slider container */
-[data-testid="stSlider"] div,
-[data-testid="stSlider"] span,
-[data-testid="stSlider"] [class*="css"] {
-    background-color: transparent !important;
-}
-
-/* Step 2 — Track: subtle translucent bar */
-[data-testid="stSlider"] [data-baseweb="slider"] > div:first-child {
-    background: rgba(255, 255, 255, 0.12) !important;
-    height: 4px !important;
-    border-radius: 4px !important;
-}
-
-/* Step 3 — Filled portion: cyan */
-[data-testid="stSlider"] [data-baseweb="slider"] > div:nth-child(2) {
-    background: var(--cyan) !important;
-    height: 4px !important;
-    border-radius: 4px !important;
-}
-
-/* Step 4 — THE THUMB: must be explicitly visible */
-[data-testid="stSlider"] [role="slider"] {
-    background-color: #00F0FF !important;
-    border: 2px solid #FFFFFF !important;
-    width: 20px !important;
-    height: 20px !important;
-    border-radius: 50% !important;
-    box-shadow: 0 0 14px rgba(0, 240, 255, 0.9), 0 0 4px rgba(0, 240, 255, 0.5) !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    z-index: 100 !important;
-    position: relative !important;
-    top: unset !important;
-}
-
-/* Step 5 — Fallback: native range input accent */
-[data-testid="stSlider"] input[type="range"] {
-    accent-color: #00F0FF !important;
-}
-
-/* Step 6 — Slider value label text */
-[data-testid="stSlider"] p,
-[data-testid="stSlider"] label {
-    color: var(--cyan) !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
