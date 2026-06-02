@@ -44,29 +44,12 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* Hide Streamlit Clutter */
+/* Hide Streamlit Clutter — target specific elements, NOT the whole header */
 #MainMenu, footer { visibility: hidden; }
-header { visibility: hidden; }
-
-/* ── SIDEBAR TOGGLE FIX (covers all Streamlit Cloud DOM variants) ──
-   Cloud & localhost can render the toggle in different elements.
-   We force-show every known selector so it's always clickable.       */
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarNavCollapseButton"],
-header button,
-header > div button,
-header > div > div button,
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
-section[data-testid="stSidebar"] > div:first-child button,
-button[aria-label="Close sidebar"],
-button[aria-label="Open sidebar"] {
-    visibility: visible !important;
-    display: flex !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    z-index: 99999 !important;
-}
+[data-testid="stToolbar"]      { display: none !important; }
+[data-testid="stDecoration"]   { display: none !important; }
+[data-testid="stStatusWidget"] { display: none !important; }
+header { background: transparent !important; }
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
@@ -170,8 +153,9 @@ button[aria-label="Open sidebar"] {
 }
 
             
-/* ─── ANIMATED SIDEBAR TOGGLE (ALIGNED) ─── */
-/* Both selectors: localhost uses collapsedControl, Cloud may use stSidebarCollapsedControl */
+/* ─── ANIMATED SIDEBAR TOGGLE ─── */
+/* stToolbar is display:none so the only button left in header IS the toggle */
+header button,
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"] {
     position: relative !important;
@@ -182,11 +166,8 @@ button[aria-label="Open sidebar"] {
     background: #0F172A !important;
     margin-top: 32px !important;
     margin-left: 5px !important;
-    visibility: visible !important;
-    display: flex !important;
-    opacity: 1 !important;
-    z-index: 99999 !important;
 }
+header button::before,
 [data-testid="collapsedControl"]::before,
 [data-testid="stSidebarCollapsedControl"]::before {
     content: '' !important;
@@ -202,27 +183,15 @@ button[aria-label="Open sidebar"] {
     animation: border-trace 2s linear infinite !important;
     z-index: 0 !important;
 }
-[data-testid="collapsedControl"] button,
-[data-testid="stSidebarCollapsedControl"] button {
-    position: absolute !important;
-    inset: 3px !important;
-    z-index: 2 !important;
-    background: #0F172A !important;
-    border: none !important;
-    border-radius: 9px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
+header button svg,
 [data-testid="collapsedControl"] button svg,
 [data-testid="stSidebarCollapsedControl"] button svg {
     fill: var(--cyan) !important;
     color: var(--cyan) !important;
     width: 24px !important;
     height: 24px !important;
+    position: relative !important;
+    z-index: 2 !important;
 }
 @keyframes border-trace {
     0%   { transform: rotate(0deg); }
