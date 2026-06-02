@@ -144,41 +144,103 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
-/* ─── MOBILE RESPONSIVENESS: CENTERING & SCROLLING ─── */
+/* ─── MOBILE RESPONSIVENESS ─── */
 @media (max-width: 768px) {
-    /* 1. Perfect Center Alignment for Cards & Columns */
-    [data-testid="stHorizontalBlock"] { 
-        flex-direction: column !important; 
-        gap: 15px !important; 
-        align-items: center !important; 
+    .block-container {
+        padding: 1rem 0.75rem 1rem 0.75rem !important;
     }
-    [data-testid="column"] { 
-        width: 100% !important; 
-        min-width: 100% !important; 
-        display: flex !important; 
-        flex-direction: column !important; 
-        align-items: center !important; 
-        justify-content: center !important; 
+
+    /* Stack all columns vertically */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+        gap: 12px !important;
     }
-    .glass-card, .plat-card { 
-        width: 100% !important; 
-        max-width: 350px !important; 
-        margin: 0 auto !important; 
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
     }
-    
-    /* 2. Force mobile browsers to prioritize vertical scrolling over charts */
-    [data-testid="stPlotlyChart"], .stPlotlyChart, .js-plotly-plot, .plotly { 
-        touch-action: pan-y !important; 
-        width: 100% !important; 
-        margin-bottom: 20px !important; /* Changed from padding to margin */
-        overflow: hidden !important;    /* Kills the tiny internal scrollbar */
+
+    /* KPI cards: 2-per-row grid */
+    .glass-card, .plat-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 16px !important;
     }
-    /* 3. Disable full-screen tap-traps */
-    [data-testid="StyledFullScreenButton"], button[title="View fullscreen"] { 
-        display: none !important; 
+    .kpi-value { font-size: 1.5rem !important; }
+    .kpi-label { font-size: 0.7rem !important; }
+    .kpi-icon  { font-size: 1.4rem !important; }
+
+    /* Charts: full width, no internal scroll, no toolbar */
+    [data-testid="stPlotlyChart"],
+    .stPlotlyChart, .js-plotly-plot, .plotly {
+        width: 100% !important;
+        touch-action: pan-y !important;
+        overflow: hidden !important;
+        margin-bottom: 16px !important;
     }
-    
-    [data-testid="stDataFrame"] { overflow-x: auto !important; width: 100% !important; }
+
+    /* Hide ALL plotly modebar buttons (belt-and-suspenders) */
+    .modebar, .modebar-container, .modebar-group {
+        display: none !important;
+    }
+
+    /* Remove plotly's internal top whitespace caused by hidden modebar */
+    .js-plotly-plot .plotly .main-svg {
+        margin-top: 0 !important;
+    }
+    .js-plotly-plot .plotly .svg-container {
+        margin-top: 0 !important;
+    }
+
+    /* Fullscreen button: remove (causes tap-trap on mobile) */
+    [data-testid="StyledFullScreenButton"],
+    button[title="View fullscreen"] {
+        display: none !important;
+    }
+
+    /* Section titles: smaller on mobile */
+    .section-title {
+        font-size: 1rem !important;
+        letter-spacing: 1px !important;
+    }
+    .title-glow { font-size: 1.6rem !important; }
+
+    /* Tables: horizontal scroll */
+    [data-testid="stDataFrame"],
+    [data-testid="stDataFrame"] > div {
+        overflow-x: auto !important;
+        width: 100% !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    /* Shrink dataframe font for mobile */
+    [data-testid="stDataFrame"] [role="gridcell"],
+    [data-testid="stDataFrame"] [role="columnheader"] {
+        font-size: 0.75rem !important;
+        padding: 6px 8px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Footer: stack vertically */
+    div[style*="justify-content: space-between"] {
+        flex-direction: column !important;
+        gap: 8px !important;
+        text-align: center !important;
+    }
+
+    /* Sidebar toggle button: reposition for mobile */
+    #cyber-toggle-btn {
+        bottom: 20px !important;
+        left: 15px !important;
+        width: 46px !important;
+        height: 46px !important;
+    }
+
+    /* BI tool battle: ratio card full width */
+    .glass-card[style*="padding:30px"] {
+        padding: 16px !important;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -414,7 +476,7 @@ with col1:
         L = fancy_layout(500); L['title'] = "Top 20 Skills Demanded"
         fig.update_layout(**L)
         L['xaxis_title'] = "Number of Mentions in Job Postings"
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 with col2:
     if not sk_filt.empty:
@@ -431,7 +493,7 @@ with col2:
         L2 = fancy_layout(500); L2['title'] = "Weekly Velocity — Top 8 Skills"
         L2['legend'] = dict(orientation='h', y=-0.2)
         fig2.update_layout(**L2)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
 
 # BI Tool Matchup
 if not sk_filt.empty:
@@ -449,7 +511,7 @@ if not sk_filt.empty:
             fig3.update_layout(**L3)
             L3['xaxis'] = dict(tickangle=-45, nticks=10, gridcolor='rgba(255,255,255,0.05)')
             L3['yaxis_title'] = "Weekly Mentions"
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, use_container_width=True, config={'displayModeBar': False})
         with cb:
             pb = bi[bi.skill=="power bi"]["mention_count"].sum()
             tb = bi[bi.skill=="tableau"]["mention_count"].sum()
@@ -474,7 +536,7 @@ with col3:
         ))
         L4 = fancy_layout(320); L4['title'] = "Job Volume by Hub"
         fig4.update_layout(**L4)
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
 
 with col4:
     if not role_df.empty:
@@ -485,9 +547,9 @@ with col4:
             textinfo='label+percent', textposition='outside'
         ))
         L7 = fancy_layout(320); L7['title'] = "Role Category Split"; L7['showlegend'] = False
-        L7['margin'].update(l=80, r=80) # Adds 80px of extra breathing room on the left/right for the text
+        L7['margin'].update(l=40, r=40, t=40, b=60) # Adds 80px of extra breathing room on the left/right for the text
         fig7.update_layout(**L7)
-        st.plotly_chart(fig7, use_container_width=True)
+        st.plotly_chart(fig7, use_container_width=True, config={'displayModeBar': False})
 
 # City Intelligence Matrix
 if not city_df.empty:
@@ -521,7 +583,7 @@ with col5:
         L6 = fancy_layout(450); L6['title'] = "Top 15 Hiring Companies"
         L6['xaxis_title'] = "Total Active Job Openings" 
         fig6.update_layout(**L6)
-        st.plotly_chart(fig6, use_container_width=True)
+        st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
 
 with col6:
     if not filt.empty:
@@ -545,7 +607,7 @@ with col6:
         )
         
         fig8.update_layout(**L8)
-        st.plotly_chart(fig8, use_container_width=True)
+        st.plotly_chart(fig8, use_container_width=True, config={'displayModeBar': False})
 
 # ─── ADVANCED CORRELATION ANALYTICS ────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🧬 <span>Multivariate Analysis</span></div>', unsafe_allow_html=True)
@@ -577,7 +639,7 @@ with col7:
         L_hm['xaxis'] = dict(tickangle=-45, gridcolor='rgba(255,255,255,0)')
         L_hm['yaxis'] = dict(gridcolor='rgba(255,255,255,0)')
         fig_hm.update_layout(**L_hm)
-        st.plotly_chart(fig_hm, use_container_width=True)
+        st.plotly_chart(fig_hm, use_container_width=True, config={'displayModeBar': False})
 
 with col8:
     # 2. SALARY SPREAD BY ROLE (BOX PLOT)
@@ -602,7 +664,7 @@ with col8:
         L_box['yaxis_title'] = "Minimum Salary (LPA)"
         L_box['showlegend'] = False 
         fig_box.update_layout(**L_box)
-        st.plotly_chart(fig_box, use_container_width=True)
+        st.plotly_chart(fig_box, use_container_width=True, config={'displayModeBar': False})
 
 # ─── PLATFORM BREAKDOWN ────────────────────────────────────────────────────────
 st.markdown('<div class="section-title" style="margin-top: 20px;">🌐 <span>Platform Breakdown</span></div>', unsafe_allow_html=True)
