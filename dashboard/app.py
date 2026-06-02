@@ -169,52 +169,94 @@ html, body, [class*="css"], .stApp {
     -webkit-text-fill-color: transparent;
 }
 
-            
-/* ─── ANIMATED SIDEBAR TOGGLE (ALIGNED) ─── */
-[data-testid="collapsedControl"] {
-    position: relative !important;
-    width: 52px !important;
-    height: 52px !important;
+/* ─── UNIVERSAL CYBERPUNK SIDEBAR TOGGLE ─── */
+[data-testid="collapsedControl"],
+button[data-testid="stSidebarCollapseButton"] {
+    position: fixed !important;
+    top: 25px !important;
+    left: 25px !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: rgba(15, 23, 42, 0.9) !important;
+    border: 2px solid var(--cyan) !important;
     border-radius: 12px !important;
-    overflow: hidden !important;
-    background: #0F172A !important;
-    margin-top: 32px !important; /* Pushed down exactly to title height */
-    margin-left: 5px !important;
-}
-[data-testid="collapsedControl"]::before {
-    content: '' !important;
-    position: absolute !important;
-    width: 200% !important; height: 200% !important;
-    top: -50% !important; left: -50% !important;
-    background: conic-gradient(
-        transparent 0deg,
-        transparent 240deg,
-        rgba(0, 240, 255, 0.9) 240deg,
-        #3B82F6 360deg
-    ) !important;
-    animation: border-trace 2s linear infinite !important;
-    z-index: 0 !important;
-}
-[data-testid="collapsedControl"] button {
-    position: absolute !important;
-    inset: 3px !important;
-    z-index: 2 !important;
-    background: #0F172A !important;
-    border: none !important;
-    border-radius: 9px !important;
+    z-index: 999999 !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
+    transition: all 0.3s ease !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 }
-[data-testid="collapsedControl"] button svg {
-    fill: var(--cyan) !important;
-    color: var(--cyan) !important;
-    width: 24px !important;
-    height: 24px !important;
+
+[data-testid="collapsedControl"]:hover,
+button[data-testid="stSidebarCollapseButton"]:hover {
+    background: rgba(0, 240, 255, 0.15) !important;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6) !important;
+    transform: scale(1.05) !important;
 }
-@keyframes border-trace {
-    0%   { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+
+/* Force the arrow icon inside to be cyan and perfectly sized */
+[data-testid="collapsedControl"] svg,
+button[data-testid="stSidebarCollapseButton"] svg {
+    color: var(--cyan) !important;
+    fill: var(--cyan) !important;
+    width: 26px !important;
+    height: 26px !important;
+    margin: auto !important;
+    display: block !important;
+}
+
+/* Strip out Streamlit's default button background */
+[data-testid="collapsedControl"] button {
+    background: transparent !important;
+    border: none !important;
+}
+                   
+/* ─── ANIMATED SIDEBAR TOGGLE (ALIGNED) ─── */
+# [data-testid="collapsedControl"] {
+#     position: relative !important;
+#     width: 52px !important;
+#     height: 52px !important;
+#     border-radius: 12px !important;
+#     overflow: hidden !important;
+#     background: #0F172A !important;
+#     margin-top: 32px !important; /* Pushed down exactly to title height */
+#     margin-left: 5px !important;
+# }
+# [data-testid="collapsedControl"]::before {
+#     content: '' !important;
+#     position: absolute !important;
+#     width: 200% !important; height: 200% !important;
+#     top: -50% !important; left: -50% !important;
+#     background: conic-gradient(
+#         transparent 0deg,
+#         transparent 240deg,
+#         rgba(0, 240, 255, 0.9) 240deg,
+#         #3B82F6 360deg
+#     ) !important;
+#     animation: border-trace 2s linear infinite !important;
+#     z-index: 0 !important;
+# }
+# [data-testid="collapsedControl"] button {
+#     position: absolute !important;
+#     inset: 3px !important;
+#     z-index: 2 !important;
+#     background: #0F172A !important;
+#     border: none !important;
+#     border-radius: 9px !important;
+#     display: flex !important;
+#     align-items: center !important;
+#     justify-content: center !important;
+# }
+# [data-testid="collapsedControl"] button svg {
+#     fill: var(--cyan) !important;
+#     color: var(--cyan) !important;
+#     width: 24px !important;
+#     height: 24px !important;
+# }
+# @keyframes border-trace {
+#     0%   { transform: rotate(0deg); }
+#     100% { transform: rotate(360deg); }
 }
 
 /* ─── FIXED TABLE OVERRIDES (VISIBLE TEXT & NAVY THEME) ─── */
