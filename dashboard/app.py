@@ -86,8 +86,8 @@ button[kind="headerNoPadding"] {
     color: var(--cyan) !important;
 }
 [data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"],
 button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; }
+.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
 .premium-header {
