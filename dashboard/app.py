@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from datetime import datetime
+import streamlit.components.v1 as components
 
 # ─── 1. CORE CONFIG & EXACT PATHS ──────────────────────────────────────────────
 _here = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── 2. PREMIUM DARK GLASSMORPHISM CSS (FLOATING BOTTOM MENU) ──────────────
+# ─── 2. PREMIUM DARK GLASSMORPHISM CSS & FLOATING MENU (EXTREME MEASURE) ──────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -44,103 +45,18 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. NEUTRALIZE THE HEADER (Leave it invisible but alive) ─── */
+/* Make Header Transparent & Hide Cloud Clutter */
 header[data-testid="stHeader"] { 
     background: transparent !important; 
     box-shadow: none !important;
-    z-index: 999990 !important;
-    pointer-events: none !important;
 }
-
-/* Hide cloud injection clutter */
-[data-testid="stToolbar"], 
-[data-testid="stDecoration"], 
-[data-testid="stStatusWidget"], 
-.viewerBadge_container, 
-.viewerBadge_link,
+.stDeployButton, 
+[data-testid="stHeader"] a, 
 #MainMenu, 
 footer {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
 }
-
-/* ─── 2. THE FLOATING BOTTOM-LEFT CYBERPUNK BUTTON ─── */
-/* We target the button and forcefully move it to the bottom left of the screen */
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    top: auto !important;       /* Removes it from the top */
-    bottom: 25px !important;    /* Pins it to the bottom */
-    left: 25px !important;      /* Pins it to the left */
-    width: 56px !important;
-    height: 56px !important;
-    border-radius: 12px !important;
-    background: #0F172A !important;
-    z-index: 9999999 !important; /* Maximum z-index so nothing covers it */
-    align-items: center !important;
-    justify-content: center !important;
-    border: none !important;
-    pointer-events: auto !important;
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3) !important;
-    overflow: hidden !important;
-}
-
-/* Layer 0: The Rotating Cyberpunk Glow Animation */
-[data-testid="collapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"]::before {
-    content: '' !important;
-    position: absolute !important;
-    width: 250% !important; height: 250% !important;
-    top: -75% !important; left: -75% !important;
-    background: conic-gradient(
-        transparent 0deg,
-        transparent 240deg,
-        rgba(0, 240, 255, 0.9) 240deg,
-        #3B82F6 360deg
-    ) !important;
-    animation: border-trace 2s linear infinite !important;
-    z-index: 0 !important;
-}
-
-/* Layer 1: The Inner Dark Cutout */
-[data-testid="collapsedControl"]::after,
-[data-testid="stSidebarCollapsedControl"]::after {
-    content: '' !important;
-    position: absolute !important;
-    inset: 3px !important; /* This 3px inset creates the glowing border effect */
-    background: #0F172A !important;
-    border-radius: 9px !important;
-    z-index: 1 !important;
-    transition: background 0.3s ease !important;
-}
-
-[data-testid="collapsedControl"]:hover::after,
-[data-testid="stSidebarCollapsedControl"]:hover::after {
-    background: #1E293B !important;
-}
-
-/* Layer 2: The SVG Icon */
-[data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapsedControl"] svg {
-    fill: #00F0FF !important;
-    color: #00F0FF !important;
-    width: 26px !important;
-    height: 26px !important;
-    position: relative !important;
-    z-index: 2 !important; /* Placed on top of the dark cutout */
-}
-
-@keyframes border-trace {
-    0%   { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Push the main app content down slightly */
-.block-container { padding: 3rem 2.5rem 1.5rem 2.5rem !important; max-width: 100% !important; }
+.block-container { padding: 2rem 2.5rem 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
 .premium-header {
@@ -185,6 +101,102 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 </style>
 """, unsafe_allow_html=True)
+
+# ─── THE JAVASCRIPT DOM ESCAPE HATCH ───
+# This completely bypasses Streamlit's React Engine to build a permanent floating button.
+components.html("""
+<script>
+(function() {
+    const doc = window.parent.document;
+    
+    // Prevent duplicate buttons on hot-reloads
+    if (doc.getElementById('cyber-toggle-btn')) return;
+
+    // Build the Floating Action Button
+    const btn = doc.createElement('div');
+    btn.id = 'cyber-toggle-btn';
+    btn.innerHTML = `
+        <div class="cyber-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#00F0FF">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+            </svg>
+        </div>
+    `;
+
+    // Inject CSS directly into the main document head to style our custom button
+    // AND permanently hide Streamlit's native header toggle
+    const style = doc.createElement('style');
+    style.innerHTML = `
+        #cyber-toggle-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: #0F172A;
+            z-index: 99999999;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #cyber-toggle-btn::before {
+            content: '';
+            position: absolute;
+            width: 250%; height: 250%;
+            top: -75%; left: -75%;
+            background: conic-gradient(transparent 0deg, transparent 240deg, rgba(0, 240, 255, 0.9) 240deg, #3B82F6 360deg);
+            animation: border-trace 2s linear infinite;
+            z-index: 0;
+        }
+        #cyber-toggle-btn .cyber-inner {
+            position: absolute;
+            inset: 3px;
+            background: #0F172A;
+            border-radius: 9px;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        #cyber-toggle-btn:hover .cyber-inner {
+            background: #1E293B;
+        }
+        #cyber-toggle-btn svg {
+            z-index: 2;
+        }
+        @keyframes border-trace {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Permanently hide Streamlit's native toggles */
+        [data-testid="collapsedControl"],
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="stSidebarCollapseButton"] {
+            display: none !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    `;
+    doc.head.appendChild(style);
+
+    // Click Logic: Find the invisible native Streamlit button and secretly click it
+    btn.onclick = function() {
+        const stBtn = doc.querySelector('[data-testid="collapsedControl"]') ||
+                      doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
+                      doc.querySelector('[data-testid="stSidebarCollapseButton"]');
+        if (stBtn) stBtn.click();
+    };
+
+    // Append to the absolute root body so it ignores Streamlit's clipped containers
+    doc.body.appendChild(btn);
+})();
+</script>
+""", height=0, width=0)
 
 
 # ─── 3. PLOTLY CHART THEME ENGINE ──────────────────────────────────────────────
@@ -544,7 +556,7 @@ if not filt.empty:
     disp = latest[show].head(100)
     st.dataframe(disp, use_container_width=True, hide_index=True)
     
-# ─── 7. CUSTOM FOOTER (RESTORED) ───
+# ─── 7. CUSTOM FOOTER ──────────────────────────────────────────────────────────
 st.markdown(f"""
 <div style='margin-top: 40px; padding: 20px 0; border-top: 1px solid rgba(0, 240, 255, 0.2); display: flex; justify-content: space-between; align-items: center;'>
     <div style='font-family: "JetBrains Mono", monospace; font-size: 0.75rem; color: #94A3B8; letter-spacing: 1px; text-transform: uppercase;'>
