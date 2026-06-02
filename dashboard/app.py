@@ -44,18 +44,16 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. NUKE HEADER & CLUTTER ─── */
+/* ─── 1. HIDE HEADER & CLUTTER ─── */
 header[data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    pointer-events: none !important; /* Click through invisible header */
+    pointer-events: none !important;
 }
-[data-testid="stToolbar"], #MainMenu, footer { 
-    display: none !important; 
-}
+[data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 2. ISOLATED CYBERPUNK BUTTON ─── */
+/* ─── 2. ISOLATE THE CYBERPUNK BUTTON ─── */
 [data-testid="collapsedControl"], 
 [data-testid="stSidebarCollapsedControl"] {
     pointer-events: auto !important;
@@ -66,18 +64,12 @@ header[data-testid="stHeader"] {
     width: 48px !important;
     height: 48px !important;
     background: rgba(15, 23, 42, 0.95) !important;
-    border: 2px solid var(--cyan) !important;
+    border: 2px solid #00F0FF !important;
     border-radius: 12px !important;
     z-index: 999999 !important;
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.3s ease;
-}
-[data-testid="collapsedControl"]:hover,
-[data-testid="stSidebarCollapsedControl"]:hover {
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.8) !important;
-    transform: scale(1.05);
 }
 [data-testid="collapsedControl"] button,
 [data-testid="stSidebarCollapsedControl"] button {
@@ -88,8 +80,8 @@ header[data-testid="stHeader"] {
 }
 [data-testid="collapsedControl"] svg,
 [data-testid="stSidebarCollapsedControl"] svg {
-    fill: var(--cyan) !important;
-    color: var(--cyan) !important;
+    fill: #00F0FF !important;
+    color: #00F0FF !important;
     width: 24px !important;
     height: 24px !important;
 }
@@ -193,7 +185,7 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
-/* ─── 7. MOBILE RESPONSIVENESS ─── */
+/* ─── MOBILE RESPONSIVENESS ─── */
 @media (max-width: 768px) {
     .block-container { padding: 1rem !important; margin-top: 50px !important; }
     .title-glow { font-size: 1.6rem !important; }
