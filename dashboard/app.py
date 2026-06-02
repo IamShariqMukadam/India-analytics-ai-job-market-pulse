@@ -86,8 +86,8 @@ button[kind="headerNoPadding"] {
     color: var(--cyan) !important;
 }
 [data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"],
 button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; }
-.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
 .premium-header {
@@ -189,30 +189,51 @@ button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; 
     -webkit-text-fill-color: transparent;
 }
 
-/* ─── UNIVERSAL CYBERPUNK SIDEBAR TOGGLE ─── */
-[data-testid="collapsedControl"],
-button[data-testid="stSidebarCollapseButton"] {
+/* ─── ANIMATED CYBERPUNK SIDEBAR TOGGLE ─── */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
     position: fixed !important;
-    top: 25px !important;
-    left: 25px !important;
-    width: 48px !important;
-    height: 48px !important;
-    background: rgba(15, 23, 42, 0.9) !important;
-    border: 2px solid var(--cyan) !important;
+    top: 25px !important; left: 25px !important;
+    width: 52px !important; height: 52px !important;
     border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #0F172A !important;
     z-index: 999999 !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
-    transition: all 0.3s ease !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    visibility: visible !important;
 }
-
-[data-testid="collapsedControl"]:hover,
-button[data-testid="stSidebarCollapseButton"]:hover {
-    background: rgba(0, 240, 255, 0.15) !important;
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6) !important;
-    transform: scale(1.05) !important;
+[data-testid="stSidebarCollapsedControl"]::before,
+[data-testid="collapsedControl"]::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 200% !important; height: 200% !important;
+    top: -50% !important; left: -50% !important;
+    background: conic-gradient(transparent 0deg, transparent 240deg, rgba(0, 240, 255, 0.9) 240deg, #3B82F6 360deg) !important;
+    animation: border-trace 2s linear infinite !important;
+    z-index: 0 !important;
+}
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button {
+    position: absolute !important;
+    inset: 3px !important; z-index: 2 !important;
+    background: #0F172A !important;
+    border: none !important; border-radius: 9px !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+}
+[data-testid="stSidebarCollapsedControl"] button svg,
+[data-testid="collapsedControl"] button svg {
+    fill: var(--cyan) !important; color: var(--cyan) !important;
+    width: 24px !important; height: 24px !important;
+}
+button[data-testid="stSidebarCollapseButton"] {
+    visibility: visible !important;
+    background: transparent !important; border: none !important;
+}
+button[data-testid="stSidebarCollapseButton"] svg {
+    fill: var(--cyan) !important; color: var(--cyan) !important;
+}
+@keyframes border-trace {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Force the arrow icon inside to be cyan and perfectly sized */
@@ -713,7 +734,7 @@ except Exception as e:
 # ─── LIVE DATA SCRAPER LOG ─────────────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🔍 <span>Production Database Registry</span></div>', unsafe_allow_html=True)
 if not filt.empty:
-    search = st.text_input("", placeholder="Search job titles, companies, or tech stacks...", label_visibility="visible")
+    search = st.text_input("Search", placeholder="Search job titles, companies, or tech stacks...", label_visibility="hidden")
     latest = filt.sort_values("scrape_date", ascending=False).copy()
     if search:
         mask = (latest["job_title"].str.contains(search, case=False, na=False) |
