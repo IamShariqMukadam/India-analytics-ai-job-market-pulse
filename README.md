@@ -1,121 +1,173 @@
 # ⚡ India Analytics & AI Job Market Pulse
 
-> **Real-time, enterprise-grade data analytics dashboard tracking Data Science, Analytics, and AI job demand across India's top tech hubs.**
+> **Real-time, enterprise-grade analytics dashboard tracking Data Science, Analytics & AI job demand across India's top tech hubs — updated every week automatically.**
 
-🔗 **[Live Dashboard →](https://your-short-link.streamlit.app)** &nbsp;|&nbsp; Built by **Shariq Mukadam** &nbsp;|&nbsp; Data: Naukri, LinkedIn, Internshala
+🔗 **[Live Dashboard →](https://jobmarketpulse.streamlit.app)** &nbsp;|&nbsp; Built by **Shariq Mukadam** &nbsp;|&nbsp; Data: Naukri · LinkedIn · Internshala
 
 ---
 
 ## 📸 Dashboard Screenshots
 
-### 1. Interactive Streamlit Dashboard (Dark Glassmorphism UI)
-> _Screenshot: (Replace with image of your main KPI and Skills Intel view)_
+### Streamlit Live Dashboard — Dark UI
+> _Replace with screenshot of your KPI + Skills Intel view_
 
-### 2. Multivariate Market Analysis
-> _Screenshot: (Replace with image of your Heatmap and Box Plot)_
-
-### 3. Power BI Report — Market Overview
+### Power BI Report — Page 1: Market Overview
 ![Power BI Page 1](powerbi/screenshots/page1_overview.png)
 
-*(Additional Power BI pages: [Geographic Intelligence](powerbi/screenshots/page2_geography.png) | [Recruiter Intelligence](powerbi/screenshots/page3_recruiter.png))*
+### Power BI Report — Page 2: Geographic Intelligence
+![Power BI Page 2](powerbi/screenshots/page2_geography.png)
+
+### Power BI Report — Page 3: Recruiter Intelligence
+![Power BI Page 3](powerbi/screenshots/page3_recruiter.png)
 
 ---
 
 ## 🎯 What This Tracks
+
 | Metric | Details |
 |--------|---------|
-| **Skills vs. Roles (Heatmap)** | Cross-tabulated dependency matrix mapping which specific skills are required for DA vs. BA vs. DE roles. |
-| **Realistic Salary Spreads** | Box plots showing the true statistical distribution of salaries (LPA) by role, filtering out extreme outliers. |
-| **Geographic Matrix** | City-wise total jobs, average floor salaries, and entry-level (fresher) ingress ratios. |
-| **BI Tool Battle** | Week-over-week market share velocity between Power BI, Tableau, and Looker. |
-| **Platform Breakdown** | Sourcing volume metrics segmented by Naukri, LinkedIn, and Internshala. |
+| **Skill Demand** | Top 25 skills demanded across DA/BA/DE/DS/AI roles — live counts updated weekly |
+| **BI Tool Battle** | Week-over-week demand velocity: Power BI vs Tableau vs Looker |
+| **Geographic Matrix** | City-wise job volume, floor salaries (LPA), and fresher ingress ratios |
+| **Role Split** | DA vs BA vs Data Engineer vs Data Scientist vs AI Engineer demand breakdown |
+| **Platform Breakdown** | Sourcing volume by Naukri, LinkedIn, and Internshala |
+| **Salary Distribution** | Box plots showing true salary spreads per city — filters extreme outliers |
+| **Experience Landscape** | What % of roles are genuinely fresher-eligible vs mid/senior |
+| **Company Intelligence** | Top 15 companies hiring analytics talent in India right now |
 
 ---
 
 ## 🔑 Key Findings (Updated Weekly)
-- **SQL** appears in ~90% of all DA job postings — it remains the non-negotiable core skill.
-- **Power BI** demand consistently outpaces **Tableau** by nearly 2x in the Indian market.
-- Only **~18%** of posted roles are genuinely fresher-eligible (0 years experience).
-- **Bangalore** leads total job volume; **Mumbai** commands the highest average starting salary.
-- **AI/LLM** skills are rapidly transitioning from "nice-to-have" to baseline requirements in standard analyst roles.
+
+- **SQL** appears in ~90% of all DA job postings — the non-negotiable core skill
+- **Power BI** consistently outpaces Tableau by ~2x in the Indian market
+- Only **~18%** of posted roles are genuinely fresher-eligible
+- **Bangalore** leads total job volume; **Mumbai** commands the highest average starting salary
+- **AI/LLM** skills are rapidly transitioning from "nice-to-have" to baseline requirements in standard analyst roles
 
 ---
 
 ## 🏗 Architecture Pipeline
 
-```text
-Job Portals (LinkedIn, Naukri, Internshala)
-      ↓
-naukri_scraper.py   [Selenium + anti-bot: UA rotation, random delays]
-      ↓
-cleaner.py          [Pandas — normalize cities, extract 50+ skills, parse salary]
-      ↓
-db_loader.py        [SQLite — jobs table + 4 weekly aggregation tables]
-      ↓
-      ┌──────────────────────┬──────────────────────┐
-      ↓                      ↓                      ↓
-  app.py                   eda.py               export_for_powerbi.py
-[Streamlit Cloud]      [9 EDA charts]          [Excel → Power BI]
-[Glassmorphism UI]     [analysis/charts/]      [3-page .pbix report]
+```
+Job Portals (Naukri · LinkedIn · Internshala)
+            ↓
+     scraper/main.py
+[Selenium + requests + BS4]
+[Anti-bot: UA rotation, random delays]
+            ↓
+     scraper/cleaner.py
+[Pandas — normalize cities, extract 50+ skills, parse salary/exp]
+[SQLite — jobs + 4 weekly aggregation tables]
+[Excel — JobHarvestor.xlsx with skill frequency]
+            ↓
+     scraper/main2.py          (Day 2)
+[JD scraping — LinkedIn API + Selenium Naukri]
+[Groq LLM — llama-3.1-8b-instant skill/exp/salary extraction]
+            ↓
+     ┌──────────────────┬────────────────────────┐
+     ↓                  ↓                        ↓
+ dashboard/app.py    analysis/eda.py    powerbi/export_for_powerbi.py
+[Streamlit Cloud]   [12 EDA charts]    [Excel → Power BI 3-page report]
+[Dark neon UI]      [PNG charts]
+```
 
-Project Structure:
+**Automated weekly via `scheduler.py` — pipeline executes every Monday at 9:00 AM.**
+
+---
+
+## 📁 Project Structure
+
+```
 india-job-market-pulse/
-├── .streamlit/
-│   └── config.toml              # Streamlit native theme overrides (Cyan/Slate)
 ├── scraper/
-│   ├── naukri_scraper.py        # Selenium scraper
-│   ├── cleaner.py               # Data cleaning + skill extraction
-│   ├── db_loader.py             # SQLite loader + aggregations
-│   ├── seed_data.py             # 12-week historical seed data
-│   ├── scheduler.py             # Weekly automation
-│   └── run_pipeline.py          # One-click pipeline runner
+│   ├── config.py                    # Roles, platforms, locations, API keys
+│   ├── main.py                      # Day 1 — scrape all 3 platforms
+│   ├── main2.py                     # Day 2 — JD scraping + Groq LLM extraction
+│   ├── cleaner.py                   # Clean + load DB + save Excel
+│   ├── scheduler.py                 # Weekly automation (every Monday 9am)
+│   ├── scrapers/
+│   │   ├── internshala.py           # requests + BS4
+│   │   ├── linkedin.py              # LinkedIn guest jobs API
+│   │   ├── naukri.py                # Selenium + fallback
+│   │   └── jd_scraper.py            # Full JD text scraping (Day 2)
+│   └── utils/
+│       ├── driver.py                # undetected-chromedriver setup
+│       ├── humanize.py              # Human-like scroll/delay behavior
+│       └── extractor.py             # Groq LLM JSON extraction
 ├── data/
-│   ├── raw/                     # Timestamped raw CSVs
-│   ├── processed/               # Cleaned CSVs
-│   └── job_market.db            # SQLite database
+│   ├── job_market.db                # SQLite — 5 tables, time-series design
+│   ├── jobs_raw.csv                 # Raw scraped output
+│   └── JobHarvestor.xlsx            # Styled Excel — All Jobs + Skill Frequency
 ├── analysis/
-│   ├── eda.py                   # 9 EDA charts + business insights
-│   └── charts/                  # Saved PNG charts
+│   ├── eda.py                       # 12 EDA charts — cell-blocked for VS Code
+│   └── charts/                      # Saved PNG charts
 ├── dashboard/
-│   └── app.py                   # Streamlit dashboard (Enterprise UI + Plotly)
+│   └── app.py                       # Streamlit dashboard (dark neon UI + Plotly)
 ├── powerbi/
-│   ├── export_for_powerbi.py    # Exports Excel for Power BI
-│   ├── india_job_market_powerbi.xlsx  # Generated Excel (6 sheets)
-│   ├── POWERBI_GUIDE.md         # Step-by-step Power BI build guide
-│   └── screenshots/             # Power BI report screenshots
+│   ├── export_for_powerbi.py        # Exports DB → Excel for Power BI
+│   ├── india_job_market_powerbi.xlsx # 6-sheet Excel (auto-generated)
+│   ├── POWERBI_GUIDE.md             # Step-by-step 3-page report build guide
+│   └── screenshots/                 # Power BI report screenshots
 ├── deploy/
-│   └── streamlit_deploy.md      # Streamlit Cloud deploy guide
+│   └── streamlit_deploy.md          # Streamlit Cloud deploy guide
+├── .env                             # GROQ_API_KEY (not committed)
 └── requirements.txt
+```
 
-🚀 Quick Start:
-git clone [https://github.com/YOUR_USERNAME/india-job-market-pulse.git](https://github.com/YOUR_USERNAME/india-job-market-pulse.git)
+---
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/YOUR_USERNAME/india-job-market-pulse.git
 cd india-job-market-pulse
 pip install -r requirements.txt
 
-# 1. Seed historical data
-python scraper/seed_data.py
+# Day 1 — Scrape + clean + load DB + generate Excel
+cd scraper
+python main.py                    # all 3 platforms
+python main.py --skip-naukri      # skip Naukri if Brave not installed
 
-# 2. Run live scrape (30-60 mins)
-python scraper/run_pipeline.py
-# (To skip scrape and use seed only: python scraper/run_pipeline.py --skip-scrape)
+# Launch dashboard
+streamlit run ../dashboard/app.py
 
-# 3. Launch the Interactive Dashboard
-streamlit run dashboard/app.py
+# Generate EDA charts
+cd ../analysis && python eda.py
 
-# 4. Generate local EDA charts
-python analysis/eda.py
+# Day 2 — JD scraping + Groq LLM enrichment
+# (add GROQ_API_KEY to .env first — free at console.groq.com)
+cd ../scraper && python main2.py
 
-# 5. Export for Power BI
-python powerbi/export_for_powerbi.py
+# Export for Power BI
+python ../powerbi/export_for_powerbi.py
+```
 
-💡 Technical Highlights:
-Premium UI/UX Architecture: Extensive custom CSS overrides bypassing default Streamlit styling to create a modern, dark-glassmorphism aesthetic typically reserved for enterprise SaaS platforms (React/Vue).
+---
 
-Multivariate Analytics: Moving beyond simple aggregations to plot cross-tabulated heatmaps and outlier-resistant statistical distributions (Box Plots).
+## 🛠 Tech Stack
 
-Advanced Skill Extraction: Custom Regex engine matching 50+ data-stack patterns, prioritizing complex multi-word phrases to prevent false-positive matching.
+| Layer | Tools |
+|-------|-------|
+| **Scraping** | Python, Selenium, undetected-chromedriver, requests, BeautifulSoup |
+| **Data Engineering** | Pandas, Regex (50+ skill patterns), SQLite3 |
+| **LLM Extraction** | Groq API — llama-3.1-8b-instant (3-key rotation) |
+| **Dashboard UI** | Streamlit, Custom CSS (dark neon), Plotly Graph Objects |
+| **EDA / Charts** | Matplotlib, Seaborn, WordCloud |
+| **BI Reporting** | Power BI Desktop — 3-page report |
+| **Deployment** | Streamlit Cloud (free public URL) |
 
-Incremental Data Design: Database safely dedupes on (job_url, scrape_date), allowing the pipeline to be re-run indefinitely without data corruption.
+---
 
-Built to solve my own problem: instead of guessing what skills to learn, I built a pipeline to measure the actual market.
+## 💡 Technical Highlights
 
+- **Custom dark UI** — extensive CSS overrides bypassing default Streamlit styling, achieving a neon-on-purple aesthetic not available via standard theming
+- **3-key Groq rotation** — cycles across 3 API keys to triple throughput (~90 req/min) during LLM enrichment of 1700+ job descriptions
+- **Anti-bot scraping** — user-agent rotation, randomized 2.5–4.5s delays, non-headless fallback, junk-role filtering
+- **Advanced skill extraction** — Regex engine matches 50+ data-stack patterns, prioritizing multi-word phrases first to prevent false-positive partial matches
+- **Incremental design** — DB dedupes on `(job_url, scrape_date)`, safe to re-run indefinitely without data corruption
+- **Pre-aggregated tables** — 4 weekly rollup tables for instant dashboard queries, no heavy SQL at render time
+
+---
+
+*Built to solve my own problem — instead of guessing what skills to learn, I measured the actual market.*

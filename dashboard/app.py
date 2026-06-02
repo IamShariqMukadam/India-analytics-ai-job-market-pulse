@@ -67,6 +67,8 @@ html, body, [class*="css"], .stApp {
 
 /* Hide Streamlit Clutter */
 #MainMenu, footer, header { visibility: hidden; }
+[data-testid="collapsedControl"],
+button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; }
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
@@ -257,7 +259,7 @@ button[data-testid="stSidebarCollapseButton"] svg {
 # @keyframes border-trace {
 #     0%   { transform: rotate(0deg); }
 #     100% { transform: rotate(360deg); }
-}
+# }
 
 /* ─── FIXED TABLE OVERRIDES (VISIBLE TEXT & NAVY THEME) ─── */
 [data-testid="stDataFrame"], [data-testid="stDataFrame"] > div {
