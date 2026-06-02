@@ -45,7 +45,15 @@ html, body, [class*="css"], .stApp {
 }
 
 /* Hide Streamlit Clutter */
-#MainMenu, footer, header { visibility: hidden; }
+#MainMenu, footer { visibility: hidden; }
+header { visibility: hidden; }
+header [data-testid="stSidebarCollapsedControl"],
+button[data-testid="collapsedControl"],
+[data-testid="collapsedControl"] {
+    visibility: visible !important;
+    display: flex !important;
+    opacity: 1 !important;
+}
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
