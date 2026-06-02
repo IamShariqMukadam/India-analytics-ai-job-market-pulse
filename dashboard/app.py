@@ -241,6 +241,13 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
     .glass-card[style*="padding:30px"] {
         padding: 16px !important;
     }
+    /* Taller charts on mobile for breathing room */
+    .js-plotly-plot { min-height: 320px !important; }
+
+    /* Extra bottom margin for rotated x-axis labels */
+    .js-plotly-plot .plotly .xtick text {
+        font-size: 10px !important;
+    }
 }
 /* ─── KILL RED STREAMLIT BADGE, KEEP GITHUB ─── */
 a[href*="streamlit.io/cloud"],
@@ -355,40 +362,54 @@ components.html("""
 </script>
 """, height=0, width=0)
 
+
 components.html("""
 <script>
-(function killStreamlitBadge() {
-    function nuke() {
-        const doc = window.parent.document;
-        // Target all anchors linking to streamlit.io
-        doc.querySelectorAll('a[href*="streamlit.io"]').forEach(el => {
-            // But preserve any GitHub-related siblings
-            if (!el.href.includes('github')) {
-                el.style.display = 'none';
-                el.style.visibility = 'hidden';
-                // Also hide the parent li/div if it becomes empty
-                const parent = el.parentElement;
-                if (parent && parent.children.length === 1) {
-                    parent.style.display = 'none';
+(function() {
+    const doc = window.parent.document;
+
+    function killBadge() {
+        // 1. Nuke by href
+        doc.querySelectorAll('a[href*="streamlit.io"]').forEach(a => {
+            if (!a.href.includes('github')) {
+                let el = a;
+                while (el.parentElement && el.parentElement !== doc.body) {
+                    const kids = el.parentElement.querySelectorAll('a[href*="streamlit.io"]');
+                    if (kids.length === el.parentElement.children.length) {
+                        el = el.parentElement;
+                    } else break;
+                }
+                el.style.cssText = 'display:none!important;visibility:hidden!important;';
+            }
+        });
+
+        // 2. Nuke any fixed-position element at bottom-right that isn't ours
+        doc.querySelectorAll('*').forEach(el => {
+            if (el.id === 'cyber-toggle-btn') return;
+            const cs = window.parent.getComputedStyle(el);
+            if (cs.position === 'fixed') {
+                const r = el.getBoundingClientRect();
+                const W = window.parent.innerWidth;
+                const H = window.parent.innerHeight;
+                if (r.right > W * 0.6 && r.bottom > H * 0.6 && r.width < 200) {
+                    el.style.cssText = 'display:none!important;';
                 }
             }
         });
-        // Also nuke any iframe injected by Streamlit Cloud for the badge
-        doc.querySelectorAll('iframe').forEach(iframe => {
+
+        // 3. Kill Streamlit Cloud iframe badge
+        doc.querySelectorAll('iframe').forEach(f => {
             try {
-                if (iframe.src && iframe.src.includes('streamlit.io')) {
-                    iframe.style.display = 'none';
-                }
-            } catch(e) {}
+                const src = f.src || f.getAttribute('src') || '';
+                if (src.includes('streamlit')) f.style.display = 'none';
+            } catch(e){}
         });
     }
-    // Run immediately + after DOM settles
-    nuke();
-    setTimeout(nuke, 500);
-    setTimeout(nuke, 2000);
-    // Watch for dynamic injection
-    const obs = new MutationObserver(nuke);
-    obs.observe(window.parent.document.body, { childList: true, subtree: true });
+
+    killBadge();
+    setTimeout(killBadge, 800);
+    setTimeout(killBadge, 2500);
+    new MutationObserver(killBadge).observe(doc.body, {childList:true, subtree:true});
 })();
 </script>
 """, height=0, width=0)
@@ -497,18 +518,31 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# KPI Row
-c1,c2,c3,c4,c5 = st.columns(5)
+# # KPI Row
+# c1,c2,c3,c4,c5 = st.columns(5)
+# metrics = [
+#     (c1, "📊", f"{total:,}", "Total Jobs Scraped"),
+#     (c2, "💰", f"₹{avg_s}L", "Avg Min Salary (LPA)"),
+#     (c3, "🏙️", top_c, "Top Hiring Hub"),
+#     (c4, "🎓", f"{frsh}%", "Fresher Friendly"),
+#     (c5, "⚡", top_sk, "Highest Demand Skill")
+# ]
+# for col, icon, val, label in metrics:
+#     with col:
+#         st.markdown(f'<div class="glass-card"><span class="kpi-icon">{icon}</span><div class="kpi-value">{val}</div><div class="kpi-label">{label}</div></div>', unsafe_allow_html=True)
+
 metrics = [
-    (c1, "📊", f"{total:,}", "Total Jobs Scraped"),
-    (c2, "💰", f"₹{avg_s}L", "Avg Min Salary (LPA)"),
-    (c3, "🏙️", top_c, "Top Hiring Hub"),
-    (c4, "🎓", f"{frsh}%", "Fresher Friendly"),
-    (c5, "⚡", top_sk, "Highest Demand Skill")
+    ("📊", f"{total:,}", "Total Jobs Scraped"),
+    ("💰", f"₹{avg_s}L", "Avg Min Salary (LPA)"),
+    ("🏙️", top_c, "Top Hiring Hub"),
+    ("🎓", f"{frsh}%", "Fresher Friendly"),
+    ("⚡", top_sk, "Highest Demand Skill"),
 ]
-for col, icon, val, label in metrics:
-    with col:
-        st.markdown(f'<div class="glass-card"><span class="kpi-icon">{icon}</span><div class="kpi-value">{val}</div><div class="kpi-label">{label}</div></div>', unsafe_allow_html=True)
+kpi_html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">'
+for icon, val, label in metrics:
+    kpi_html += f'<div class="glass-card"><span class="kpi-icon">{icon}</span><div class="kpi-value">{val}</div><div class="kpi-label">{label}</div></div>'
+kpi_html += '</div>'
+st.markdown(kpi_html, unsafe_allow_html=True)
 
 # ─── SKILLS INTEL ──────────────────────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">⚡ <span>Skills Intelligence</span></div>', unsafe_allow_html=True)
@@ -556,7 +590,7 @@ if not sk_filt.empty:
             for skill in bi["skill"].unique():
                 d = bi[bi["skill"]==skill]; c = bi_c.get(skill,"#fff")
                 fig3.add_trace(go.Scatter(x=d["week"], y=d["mention_count"], name=skill.title(), line=dict(color=c, width=3), mode='lines+markers'))
-            L3 = fancy_layout(280); L3['legend'] = dict(orientation='h', y=1.2)
+            L3 = fancy_layout(350); L3['legend'] = dict(orientation='h', y=1.2)
             fig3.update_layout(**L3)
             L3['xaxis'] = dict(tickangle=-45, nticks=10, gridcolor='rgba(255,255,255,0.05)')
             L3['yaxis_title'] = "Weekly Mentions"
@@ -591,12 +625,19 @@ with col4:
     if not role_df.empty:
         rt = role_df.groupby("role_category")["job_count"].sum().reset_index()
         fig7 = go.Figure(go.Pie(
-            labels=rt["role_category"], values=rt["job_count"], hole=0.7,
+            labels=rt["role_category"], values=rt["job_count"], hole=0.65,
             marker=dict(colors=COLORS, line=dict(color='#05050A', width=3)),
-            textinfo='label+percent', textposition='outside'
+            textinfo='percent', textposition='inside',
+            insidetextorientation='radial'
         ))
-        L7 = fancy_layout(320); L7['title'] = "Role Category Split"; L7['showlegend'] = False
-        L7['margin'].update(l=40, r=40, t=40, b=60) # Adds 80px of extra breathing room on the left/right for the text
+        L7 = fancy_layout(420); L7['title'] = "Role Category Split"
+        L7['showlegend'] = True
+        L7['legend'] = dict(
+            orientation='v', x=1.02, y=0.5,
+            font=dict(size=11, color='#F8FAFC'),
+            bgcolor='rgba(0,0,0,0)'
+        )
+        L7['margin'].update(l=10, r=120, t=40, b=20)
         fig7.update_layout(**L7)
         st.plotly_chart(fig7, use_container_width=True, config={'displayModeBar': False})
 
