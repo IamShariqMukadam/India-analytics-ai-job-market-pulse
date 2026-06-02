@@ -190,51 +190,51 @@ button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; 
 }
 
 /* ─── ANIMATED CYBERPUNK SIDEBAR TOGGLE ─── */
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="collapsedControl"] {
-    position: fixed !important;
-    top: 25px !important; left: 25px !important;
-    width: 52px !important; height: 52px !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    background: #0F172A !important;
-    z-index: 999999 !important;
-    visibility: visible !important;
-}
-[data-testid="stSidebarCollapsedControl"]::before,
-[data-testid="collapsedControl"]::before {
-    content: '' !important;
-    position: absolute !important;
-    width: 200% !important; height: 200% !important;
-    top: -50% !important; left: -50% !important;
-    background: conic-gradient(transparent 0deg, transparent 240deg, rgba(0, 240, 255, 0.9) 240deg, #3B82F6 360deg) !important;
-    animation: border-trace 2s linear infinite !important;
-    z-index: 0 !important;
-}
-[data-testid="stSidebarCollapsedControl"] button,
-[data-testid="collapsedControl"] button {
-    position: absolute !important;
-    inset: 3px !important; z-index: 2 !important;
-    background: #0F172A !important;
-    border: none !important; border-radius: 9px !important;
-    display: flex !important; align-items: center !important; justify-content: center !important;
-}
-[data-testid="stSidebarCollapsedControl"] button svg,
-[data-testid="collapsedControl"] button svg {
-    fill: var(--cyan) !important; color: var(--cyan) !important;
-    width: 24px !important; height: 24px !important;
-}
-button[data-testid="stSidebarCollapseButton"] {
-    visibility: visible !important;
-    background: transparent !important; border: none !important;
-}
-button[data-testid="stSidebarCollapseButton"] svg {
-    fill: var(--cyan) !important; color: var(--cyan) !important;
-}
-@keyframes border-trace {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+# [data-testid="stSidebarCollapsedControl"],
+# [data-testid="collapsedControl"] {
+#     position: fixed !important;
+#     top: 25px !important; left: 25px !important;
+#     width: 52px !important; height: 52px !important;
+#     border-radius: 12px !important;
+#     overflow: hidden !important;
+#     background: #0F172A !important;
+#     z-index: 999999 !important;
+#     visibility: visible !important;
+# }
+# [data-testid="stSidebarCollapsedControl"]::before,
+# [data-testid="collapsedControl"]::before {
+#     content: '' !important;
+#     position: absolute !important;
+#     width: 200% !important; height: 200% !important;
+#     top: -50% !important; left: -50% !important;
+#     background: conic-gradient(transparent 0deg, transparent 240deg, rgba(0, 240, 255, 0.9) 240deg, #3B82F6 360deg) !important;
+#     animation: border-trace 2s linear infinite !important;
+#     z-index: 0 !important;
+# }
+# [data-testid="stSidebarCollapsedControl"] button,
+# [data-testid="collapsedControl"] button {
+#     position: absolute !important;
+#     inset: 3px !important; z-index: 2 !important;
+#     background: #0F172A !important;
+#     border: none !important; border-radius: 9px !important;
+#     display: flex !important; align-items: center !important; justify-content: center !important;
+# }
+# [data-testid="stSidebarCollapsedControl"] button svg,
+# [data-testid="collapsedControl"] button svg {
+#     fill: var(--cyan) !important; color: var(--cyan) !important;
+#     width: 24px !important; height: 24px !important;
+# }
+# button[data-testid="stSidebarCollapseButton"] {
+#     visibility: visible !important;
+#     background: transparent !important; border: none !important;
+# }
+# button[data-testid="stSidebarCollapseButton"] svg {
+#     fill: var(--cyan) !important; color: var(--cyan) !important;
+# }
+# @keyframes border-trace {
+#     0% { transform: rotate(0deg); }
+#     100% { transform: rotate(360deg); }
+# }
 
 /* Force the arrow icon inside to be cyan and perfectly sized */
 [data-testid="collapsedControl"] svg,
@@ -254,51 +254,51 @@ button[data-testid="stSidebarCollapseButton"] svg {
 }
                    
 /* ─── ANIMATED SIDEBAR TOGGLE (ALIGNED) ─── */
-# [data-testid="collapsedControl"] {
-#     position: relative !important;
-#     width: 52px !important;
-#     height: 52px !important;
-#     border-radius: 12px !important;
-#     overflow: hidden !important;
-#     background: #0F172A !important;
-#     margin-top: 32px !important; /* Pushed down exactly to title height */
-#     margin-left: 5px !important;
-# }
-# [data-testid="collapsedControl"]::before {
-#     content: '' !important;
-#     position: absolute !important;
-#     width: 200% !important; height: 200% !important;
-#     top: -50% !important; left: -50% !important;
-#     background: conic-gradient(
-#         transparent 0deg,
-#         transparent 240deg,
-#         rgba(0, 240, 255, 0.9) 240deg,
-#         #3B82F6 360deg
-#     ) !important;
-#     animation: border-trace 2s linear infinite !important;
-#     z-index: 0 !important;
-# }
-# [data-testid="collapsedControl"] button {
-#     position: absolute !important;
-#     inset: 3px !important;
-#     z-index: 2 !important;
-#     background: #0F172A !important;
-#     border: none !important;
-#     border-radius: 9px !important;
-#     display: flex !important;
-#     align-items: center !important;
-#     justify-content: center !important;
-# }
-# [data-testid="collapsedControl"] button svg {
-#     fill: var(--cyan) !important;
-#     color: var(--cyan) !important;
-#     width: 24px !important;
-#     height: 24px !important;
-# }
-# @keyframes border-trace {
-#     0%   { transform: rotate(0deg); }
-#     100% { transform: rotate(360deg); }
-# }
+[data-testid="collapsedControl"] {
+    position: relative !important;
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #0F172A !important;
+    margin-top: 32px !important; /* Pushed down exactly to title height */
+    margin-left: 5px !important;
+}
+[data-testid="collapsedControl"]::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 200% !important; height: 200% !important;
+    top: -50% !important; left: -50% !important;
+    background: conic-gradient(
+        transparent 0deg,
+        transparent 240deg,
+        rgba(0, 240, 255, 0.9) 240deg,
+        #3B82F6 360deg
+    ) !important;
+    animation: border-trace 2s linear infinite !important;
+    z-index: 0 !important;
+}
+[data-testid="collapsedControl"] button {
+    position: absolute !important;
+    inset: 3px !important;
+    z-index: 2 !important;
+    background: #0F172A !important;
+    border: none !important;
+    border-radius: 9px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+[data-testid="collapsedControl"] button svg {
+    fill: var(--cyan) !important;
+    color: var(--cyan) !important;
+    width: 24px !important;
+    height: 24px !important;
+}
+@keyframes border-trace {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
 /* ─── FIXED TABLE OVERRIDES (VISIBLE TEXT & NAVY THEME) ─── */
 [data-testid="stDataFrame"], [data-testid="stDataFrame"] > div {
