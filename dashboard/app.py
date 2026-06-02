@@ -275,14 +275,17 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 </style>
 """, unsafe_allow_html=True)
 
-# ─── JS FIX: MutationObserver for sidebar toggle button ──────────────────────
-st.markdown("""
+import streamlit.components.v1 as components
+
+# ─── JS FIX: sidebar toggle animation via iframe ──────────────────────────────
+components.html("""
 <script>
 (function() {
-    const STYLE_ID = 'toggle-anim-style';
-    if (!document.getElementById(STYLE_ID)) {
-        const s = document.createElement('style');
-        s.id = STYLE_ID;
+    const doc = window.parent.document;
+
+    if (!doc.getElementById('toggle-anim-style')) {
+        const s = doc.createElement('style');
+        s.id = 'toggle-anim-style';
         s.textContent = `
             .anim-toggle {
                 position: relative !important;
@@ -308,24 +311,26 @@ st.markdown("""
                 position: relative !important; z-index: 2 !important;
             }
         `;
-        document.head.appendChild(s);
+        doc.head.appendChild(s);
     }
 
     function applyClass() {
-        const btn = document.querySelector('[data-testid="collapsedControl"]')
-                 || document.querySelector('[data-testid="stSidebarCollapsedControl"]')
-                 || document.querySelector('header button');
+        const btn = doc.querySelector('[data-testid="collapsedControl"]')
+                 || doc.querySelector('[data-testid="stSidebarCollapsedControl"]')
+                 || doc.querySelector('header button');
         if (btn && !btn.classList.contains('anim-toggle')) {
             btn.classList.add('anim-toggle');
         }
     }
 
     const obs = new MutationObserver(applyClass);
-    obs.observe(document.body, { childList: true, subtree: true });
+    obs.observe(doc.body, { childList: true, subtree: true });
     applyClass();
+    setTimeout(applyClass, 500);
+    setTimeout(applyClass, 1500);
 })();
 </script>
-""", unsafe_allow_html=True)
+""", height=0)
 
 # ─── 3. PLOTLY CHART THEME ENGINE ──────────────────────────────────────────────
 def fancy_layout(h=380):
