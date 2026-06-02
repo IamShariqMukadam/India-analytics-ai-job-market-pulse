@@ -44,32 +44,34 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE CLUTTER & FIX CLOUD HEADER ─── */
-/* Tag-agnostic targeting: Catches it whether Cloud uses <header> or <div> */
+/* ─── 1. HIDE CLUTTER & NUKE CLOUD BADGES ─── */
 [data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    pointer-events: none !important; /* Critical: Lets clicks pass through to the app */
+    pointer-events: none !important;
     z-index: 999990 !important;
 }
 
-/* Hide Streamlit cloud clutter (Deploy button, hamburger menu) */
+/* Hide Streamlit cloud clutter AND the GitHub Badge */
+.viewerBadge_container, 
+.viewerBadge_link, 
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
 [data-testid="stStatusWidget"], 
 #MainMenu, 
-footer {
+footer,
+/* This explicitly hides the injected GitHub icon */
+[data-testid="stHeader"] a[href*="github.com"] {
     display: none !important;
 }
 
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── 2. THE BULLETPROOF CYBERPUNK BUTTON ─── */
-/* Targets known IDs AND structurally targets the first button wrapper in the header */
+/* Removed the broad div selector so it stops styling the GitHub badge */
 [data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stHeader"] > div:first-of-type {
-    pointer-events: auto !important; /* Re-enables clicks specifically for the button */
+[data-testid="stSidebarCollapsedControl"] {
+    pointer-events: auto !important; 
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -83,15 +85,14 @@ footer {
     z-index: 999999 !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 2px solid #00F0FF !important; /* Permanent fallback border */
+    border: 2px solid #00F0FF !important; 
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
     overflow: hidden !important;
 }
 
 /* The Animated Border */
 [data-testid="collapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"]::before,
-[data-testid="stHeader"] > div:first-of-type::before {
+[data-testid="stSidebarCollapsedControl"]::before {
     content: '' !important;
     position: absolute !important;
     width: 250% !important; height: 250% !important;
@@ -108,8 +109,7 @@ footer {
 
 /* The Inner Button Layer */
 [data-testid="collapsedControl"] button,
-[data-testid="stSidebarCollapsedControl"] button,
-[data-testid="stHeader"] > div:first-of-type button {
+[data-testid="stSidebarCollapsedControl"] button {
     pointer-events: auto !important;
     position: absolute !important;
     inset: 3px !important;
@@ -126,15 +126,13 @@ footer {
 }
 
 [data-testid="collapsedControl"] button:hover,
-[data-testid="stSidebarCollapsedControl"] button:hover,
-[data-testid="stHeader"] > div:first-of-type button:hover {
+[data-testid="stSidebarCollapsedControl"] button:hover {
     background: #1E293B !important;
 }
 
 /* The SVG Icon */
 [data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapsedControl"] svg,
-[data-testid="stHeader"] > div:first-of-type svg {
+[data-testid="stSidebarCollapsedControl"] svg {
     fill: #00F0FF !important;
     color: #00F0FF !important;
     width: 24px !important;
