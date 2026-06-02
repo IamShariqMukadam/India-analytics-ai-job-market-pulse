@@ -44,31 +44,32 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE CLUTTER, KEEP CONTAINER ALIVE ─── */
-/* CRITICAL: We cannot hide or disable pointer events on the header, or the button dies. */
-header[data-testid="stHeader"] {
+/* ─── 1. HIDE CLUTTER & FIX CLOUD HEADER ─── */
+/* Tag-agnostic targeting: Catches it whether Cloud uses <header> or <div> */
+[data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
+    pointer-events: none !important; /* Critical: Lets clicks pass through to the app */
+    z-index: 999990 !important;
 }
 
-/* Specifically hide the right-side deployment clutter, NOT the whole header */
+/* Hide Streamlit cloud clutter (Deploy button, hamburger menu) */
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
+[data-testid="stStatusWidget"], 
 #MainMenu, 
-footer { 
-    display: none !important; 
+footer {
+    display: none !important;
 }
 
-.block-container { 
-    padding: 1.5rem 2.5rem !important; 
-    max-width: 100% !important; 
-}
+.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 2. THE UNBREAKABLE CYBERPUNK BUTTON ─── */
-/* Targeting every known data-testid Streamlit Cloud uses for the toggle */
-[data-testid="collapsedControl"], 
+/* ─── 2. THE BULLETPROOF CYBERPUNK BUTTON ─── */
+/* Targets known IDs AND structurally targets the first button wrapper in the header */
+[data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
-.stAppHeader button[kind="header"] {
+[data-testid="stHeader"] > div:first-of-type {
+    pointer-events: auto !important; /* Re-enables clicks specifically for the button */
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -82,17 +83,19 @@ footer {
     z-index: 999999 !important;
     align-items: center !important;
     justify-content: center !important;
+    border: 2px solid #00F0FF !important; /* Permanent fallback border */
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
-    border: none !important;
+    overflow: hidden !important;
 }
 
-/* The Animated Glowing Border */
+/* The Animated Border */
 [data-testid="collapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"]::before {
+[data-testid="stSidebarCollapsedControl"]::before,
+[data-testid="stHeader"] > div:first-of-type::before {
     content: '' !important;
     position: absolute !important;
-    width: 200% !important; height: 200% !important;
-    top: -50% !important; left: -50% !important;
+    width: 250% !important; height: 250% !important;
+    top: -75% !important; left: -75% !important;
     background: conic-gradient(
         transparent 0deg,
         transparent 240deg,
@@ -103,33 +106,35 @@ footer {
     z-index: 0 !important;
 }
 
-/* The Inner Dark Button Layer */
+/* The Inner Button Layer */
 [data-testid="collapsedControl"] button,
 [data-testid="stSidebarCollapsedControl"] button,
-.stAppHeader button[kind="header"] {
+[data-testid="stHeader"] > div:first-of-type button {
+    pointer-events: auto !important;
     position: absolute !important;
     inset: 3px !important;
     z-index: 2 !important;
     background: #0F172A !important;
     border: none !important;
     border-radius: 9px !important;
+    width: calc(100% - 6px) !important;
+    height: calc(100% - 6px) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: calc(100% - 6px) !important;
-    height: calc(100% - 6px) !important;
     transition: background 0.3s ease !important;
 }
 
 [data-testid="collapsedControl"] button:hover,
-[data-testid="stSidebarCollapsedControl"] button:hover {
+[data-testid="stSidebarCollapsedControl"] button:hover,
+[data-testid="stHeader"] > div:first-of-type button:hover {
     background: #1E293B !important;
 }
 
-/* The SVG Icon (Forcing it to be Cyan) */
+/* The SVG Icon */
 [data-testid="collapsedControl"] svg,
 [data-testid="stSidebarCollapsedControl"] svg,
-.stAppHeader button[kind="header"] svg {
+[data-testid="stHeader"] > div:first-of-type svg {
     fill: #00F0FF !important;
     color: #00F0FF !important;
     width: 24px !important;
@@ -141,6 +146,7 @@ footer {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
 /* ─── 3. FANCY HEADER ─── */
 .premium-header {
     background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
@@ -218,12 +224,11 @@ footer {
 }
 .kpi-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; font-weight: 600; }
 
-/* ─── 5. SECTION HEADERS ─── */
+/* ─── 5. SECTION HEADERS & WIDGETS ─── */
 .fancy-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 40px 0 20px 0; }
 .section-title { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
 .section-title span { background: linear-gradient(90deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-/* ─── 6. TABLE & WIDGETS ─── */
 section[data-testid="stSidebar"] { background: rgba(15, 23, 42, 0.95) !important; border-right: 1px solid var(--border-glow) !important; backdrop-filter: blur(20px); display: flex !important; visibility: visible !important; }
 div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; border-color: rgba(0, 240, 255, 0.2) !important; }
 .stMultiSelect [data-baseweb="tag"] { background: rgba(0, 240, 255, 0.1) !important; border: 1px solid var(--cyan) !important; color: var(--text-primary) !important; }
@@ -240,45 +245,34 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
-/* ─── MOBILE RESPONSIVENESS (ENHANCED) ─── */
+/* ─── 6. MOBILE RESPONSIVENESS (DEEP OVERRIDE) ─── */
 @media (max-width: 768px) {
     .block-container { 
         padding: 1rem !important; 
-        margin-top: 70px !important; /* Pushes content below the fixed menu button */
+        margin-top: 75px !important; /* Drops content entirely below the floating menu button */
     }
     
-    .premium-header { 
-        padding: 20px 10px !important; 
-        margin-bottom: 20px !important; 
+    /* 1. Force structural flexbox stacking (This stops cards from squashing horizontally) */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+        gap: 15px !important;
     }
     
-    .title-glow { font-size: 1.5rem !important; line-height: 1.3 !important; }
-    
-    .kpi-value { font-size: 1.6rem !important; }
-    
-    /* Give cards breathing room when stacked */
-    .glass-card, .plat-card { 
-        padding: 15px !important; 
-        margin-bottom: 15px !important; 
-    }
-    
-    /* Force absolute stacking of Streamlit columns */
+    /* 2. Ensure columns take full width */
     [data-testid="column"] { 
         width: 100% !important; 
-        flex: 1 1 100% !important; 
         min-width: 100% !important;
     }
     
-    /* Scale down oversized custom text elements for mobile */
-    .glass-card div[style*="font-size:3rem"] { 
-        font-size: 2.2rem !important; 
-    }
+    /* 3. Scale down typography gracefully */
+    .premium-header { padding: 20px 10px !important; margin-bottom: 20px !important; }
+    .title-glow { font-size: 1.5rem !important; line-height: 1.3 !important; }
+    .kpi-value { font-size: 1.6rem !important; }
+    .glass-card div[style*="font-size:3rem"] { font-size: 2rem !important; } /* Fixes the massive BI Ratio text */
     
-    /* Fix horizontal scrolling issues with Plotly/Tables */
-    [data-testid="stDataFrame"], .stPlotlyChart { 
-        width: 100% !important; 
-        overflow-x: auto !important; 
-    }
+    /* 4. Ensure Charts and DataFrames don't break the container bounds */
+    .js-plotly-plot, .plotly, .stPlotlyChart { width: 100% !important; }
+    [data-testid="stDataFrame"] { overflow-x: auto !important; }
 }
 </style>
 """, unsafe_allow_html=True)
