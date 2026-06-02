@@ -74,11 +74,16 @@ footer {
     visibility: visible !important;
     opacity: 1 !important;
     position: fixed !important;
-    bottom: auto !important;
+    bottom: 15px !important;
     top: 15px !important;
     right: 15px !important;
     z-index: 999999 !important;
     pointer-events: auto !important;
+}
+/* Surgically target and destroy ONLY the Streamlit link inside the badge */
+.viewerBadge_container a[href*="streamlit.io"],
+.viewerBadge_link[href*="streamlit.io"] {
+    display: none !important;
 }
 
 /* Permanently hide native toggles */
@@ -139,40 +144,40 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
-/* ─── MOBILE RESPONSIVENESS FIXES (ULTIMATE SCROLL FIX) ─── */
+/* ─── MOBILE RESPONSIVENESS: CENTERING & SCROLLING ─── */
 @media (max-width: 768px) {
-    .block-container { 
-        padding: 1rem !important; 
-        padding-bottom: 90px !important; /* Make room for bottom button */
+    /* 1. Perfect Center Alignment for Cards & Columns */
+    [data-testid="stHorizontalBlock"] { 
+        flex-direction: column !important; 
+        gap: 15px !important; 
+        align-items: center !important; 
     }
-    /* Force structural stacking for columns */
-    [data-testid="stHorizontalBlock"] { flex-direction: column !important; gap: 20px !important; }
-    [data-testid="column"] { width: 100% !important; min-width: 100% !important; }
-    
-    /* Scale typography down */
-    .title-glow { font-size: 1.5rem !important; line-height: 1.3 !important; }
-    .kpi-value { font-size: 1.6rem !important; }
-    .glass-card div[style*="font-size:3rem"] { font-size: 2rem !important; }
-    .premium-header { padding: 20px 10px !important; }
-    
-    /* 1. KILL THE EXPAND BUTTON: Stops accidental fullscreen taps */
-    [data-testid="StyledFullScreenButton"] {
-        display: none !important;
-        pointer-events: none !important;
+    [data-testid="column"] { 
+        width: 100% !important; 
+        min-width: 100% !important; 
+        display: flex !important; 
+        flex-direction: column !important; 
+        align-items: center !important; 
+        justify-content: center !important; 
     }
-
-    /* 2. FIX SCROLL HIJACKING: Tells mobile browsers to scroll the page vertically over charts */
-    .stPlotlyChart { 
+    .glass-card, .plat-card { 
+        width: 100% !important; 
+        max-width: 350px !important; 
+        margin: 0 auto !important; 
+    }
+    
+    /* 2. Force mobile browsers to prioritize vertical scrolling over charts */
+    [data-testid="stPlotlyChart"], .stPlotlyChart, .js-plotly-plot, .plotly { 
         touch-action: pan-y !important; 
         width: 100% !important; 
+        padding-bottom: 20px !important;
     }
     
-    /* 3. ADD "THUMB SAFE ZONES": Extra space between charts so you have room to grab the page */
-    .stPlotlyChart > div {
-        margin-bottom: 15px !important;
+    /* 3. Disable full-screen tap-traps */
+    [data-testid="StyledFullScreenButton"], button[title="View fullscreen"] { 
+        display: none !important; 
     }
     
-    /* Prevent horizontal overflow on tables */
     [data-testid="stDataFrame"] { overflow-x: auto !important; width: 100% !important; }
 }
 </style>
@@ -291,6 +296,7 @@ def fancy_layout(h=380):
         yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8')),
         hoverlabel=dict(bgcolor='rgba(15, 23, 42, 0.9)', bordercolor='#00F0FF', font=dict(family='JetBrains Mono')),
         legend=dict(font=dict(color='#F8FAFC'), bgcolor='rgba(0,0,0,0)'),
+        dragmode=False, # <-- ADD THIS LINE HERE
     )
 
 COLORS = ['#00F0FF', '#FF2D7E', '#7C3AED', '#00FF9D', '#FFD740', '#FF6B35', '#38BDF8', '#F472B6']
