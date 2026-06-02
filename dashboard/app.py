@@ -15,7 +15,7 @@ st.set_page_config(
     page_title="India Analytics Job Market Pulse",
     page_icon="⚡", 
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # ─── 2. PREMIUM DARK GLASSMORPHISM CSS ─────────────────────────────────────────
@@ -693,7 +693,7 @@ except Exception as e:
 # ─── LIVE DATA SCRAPER LOG ─────────────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🔍 <span>Production Database Registry</span></div>', unsafe_allow_html=True)
 if not filt.empty:
-    search = st.text_input("", placeholder="Search job titles, companies, or tech stacks...", label_visibility="visible")
+    search = st.text_input("", placeholder="Search job titles, companies, or tech stacks...", label_visibility="expanded")
     latest = filt.sort_values("scrape_date", ascending=False).copy()
     if search:
         mask = (latest["job_title"].str.contains(search, case=False, na=False) |
