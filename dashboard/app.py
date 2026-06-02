@@ -44,46 +44,84 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE HEADER & CLUTTER ─── */
+/* ─── 1. HIDE HEADER & CLUTTER (FIXED POINTER EVENTS) ─── */
 header[data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    pointer-events: none !important;
+    /* Removed pointer-events: none !important; so the button works on cloud */
 }
 [data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 2. ISOLATE THE CYBERPUNK BUTTON ─── */
+/* ─── 2. ISOLATE & ANIMATE THE CYBERPUNK BUTTON ─── */
 [data-testid="collapsedControl"], 
 [data-testid="stSidebarCollapsedControl"] {
-    pointer-events: auto !important;
-    display: flex !important;
     position: fixed !important;
     top: 20px !important;
     left: 20px !important;
-    width: 48px !important;
-    height: 48px !important;
-    background: rgba(15, 23, 42, 0.95) !important;
-    border: 2px solid #00F0FF !important;
+    width: 52px !important;
+    height: 52px !important;
     border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #0F172A !important;
     z-index: 999999 !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
 }
+
+/* The Animated Glowing Border */
+[data-testid="collapsedControl"]::before,
+[data-testid="stSidebarCollapsedControl"]::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 200% !important; height: 200% !important;
+    top: -50% !important; left: -50% !important;
+    background: conic-gradient(
+        transparent 0deg,
+        transparent 240deg,
+        rgba(0, 240, 255, 0.9) 240deg,
+        #3B82F6 360deg
+    ) !important;
+    animation: border-trace 2s linear infinite !important;
+    z-index: 0 !important;
+}
+
+/* The Inner Dark Button */
 [data-testid="collapsedControl"] button,
 [data-testid="stSidebarCollapsedControl"] button {
-    background: transparent !important;
+    position: absolute !important;
+    inset: 3px !important;
+    z-index: 2 !important;
+    background: #0F172A !important;
     border: none !important;
-    width: 100% !important;
-    height: 100% !important;
+    border-radius: 9px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: calc(100% - 6px) !important;
+    height: calc(100% - 6px) !important;
+    transition: background 0.3s ease !important;
 }
+
+[data-testid="collapsedControl"] button:hover,
+[data-testid="stSidebarCollapsedControl"] button:hover {
+    background: #1E293B !important;
+}
+
+/* The SVG Icon */
 [data-testid="collapsedControl"] svg,
 [data-testid="stSidebarCollapsedControl"] svg {
-    fill: #00F0FF !important;
-    color: #00F0FF !important;
+    fill: var(--cyan) !important;
+    color: var(--cyan) !important;
     width: 24px !important;
     height: 24px !important;
+}
+
+@keyframes border-trace {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* ─── 3. FANCY HEADER ─── */
