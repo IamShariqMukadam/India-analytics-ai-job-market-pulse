@@ -18,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── 2. PREMIUM DARK GLASSMORPHISM CSS (MODERNIZED & STABLE) ──────────────────
+# ─── 2. PREMIUM DARK GLASSMORPHISM CSS (EXTREME HEADER OVERRIDE) ──────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -44,26 +44,61 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── HIDE CLUTTER SAFELY (PREVENTS REACT UNMOUNTING) ─── */
-/* Do NOT use display: none here, or the cloud will delete the header entirely */
+/* ─── EXTREME MEASURE: THE "LAST BUTTON STANDING" STRATEGY ─── */
+
+/* 1. Make the parent header completely transparent but keep it in the DOM */
+header[data-testid="stHeader"] { 
+    background: transparent !important; 
+    box-shadow: none !important;
+    z-index: 999990 !important;
+}
+
+/* 2. Assassinate EVERY Cloud injection (Toolbar, Deploy Button, GitHub Link, Viewer Badges) */
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
 [data-testid="stStatusWidget"], 
 .viewerBadge_container, 
+.viewerBadge_link,
 #MainMenu, 
-footer {
+footer,
+header[data-testid="stHeader"] a {
+    display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
-    position: absolute !important;
 }
 
-header[data-testid="stHeader"] { 
-    background: transparent !important; 
-    z-index: 999990 !important;
+/* 3. Because we hid everything else, the ONLY button left in the header is the sidebar toggle.
+      We style it directly using generic HTML tags so Streamlit can't rename it to hide it. */
+header[data-testid="stHeader"] button {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: #0F172A !important;
+    border: 1px solid #00F0FF !important;
+    border-radius: 8px !important;
+    margin-top: 15px !important;
+    margin-left: 15px !important;
+    pointer-events: auto !important; /* Re-enable clicks */
+    z-index: 999999 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
 }
 
-.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
+/* Force the SVG Icon to be Cyan */
+header[data-testid="stHeader"] button svg {
+    fill: #00F0FF !important;
+    color: #00F0FF !important;
+}
+
+/* Hover Effect */
+header[data-testid="stHeader"] button:hover {
+    background-color: #1E293B !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.5) !important;
+}
+
+/* Push the main app content down slightly so it doesn't clip under our new fixed button */
+.block-container { padding: 4rem 2.5rem 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
 .premium-header {
@@ -114,33 +149,7 @@ header[data-testid="stHeader"] {
     100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
 }
 
-/* ─── BULLETPROOF CYBERPUNK BUTTON (NO GLOW, JUST CLEAN UI) ─── */
-/* Targets both the collapsed header button and expanded sidebar button */
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarCollapseButton"] {
-    background-color: #0F172A !important;
-    border: 1px solid #00F0FF !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
-    z-index: 999999 !important;
-}
-
-/* Force the SVG icon to be cyan */
-[data-testid="stSidebarCollapsedControl"] svg,
-[data-testid="stSidebarCollapseButton"] svg {
-    fill: #00F0FF !important;
-    color: #00F0FF !important;
-}
-
-/* Hover effect */
-[data-testid="stSidebarCollapsedControl"]:hover,
-[data-testid="stSidebarCollapseButton"]:hover {
-    background-color: #1E293B !important;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4) !important;
-}
-
-
-/* ─── GLASSMORPHISM METRIC CARDS ─── */
+/* ─── GLASSMORPHISM METRIC CARDS (WITH TOP BORDER) ─── */
 .glass-card {
     background: var(--card-bg);
     backdrop-filter: blur(16px);
@@ -161,20 +170,52 @@ header[data-testid="stHeader"] {
 .kpi-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
 .kpi-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 2rem; font-weight: 700; color: var(--text-primary);
-    line-height: 1.1; text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 .kpi-label {
-    font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;
-    letter-spacing: 1px; margin-top: 8px; font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    font-weight: 600;
 }
 
-/* ─── SECTION HEADERS ─── */
+/* ─── SECTION HEADERS (GRADIENT TEXT) ─── */
 .fancy-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 40px 0 20px 0; }
-.section-title { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
-.section-title span { background: linear-gradient(90deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.section-title { 
+    display: flex; align-items: center; gap: 12px; font-size: 1.25rem; 
+    font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; 
+}
+.section-title span {
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-/* ─── DATAFRAME & COMPONENT OVERRIDES ─── */
+/* ─── FIXED TABLE OVERRIDES (VISIBLE TEXT & NAVY THEME) ─── */
+[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div {
+    background-color: #06093A !important;
+}
+[data-testid="stDataFrame"] [role="columnheader"] {
+    background-color: #0A0E45 !important;
+    color: var(--cyan) !important;
+    border-bottom: 2px solid var(--border-glow) !important;
+}
+[data-testid="stDataFrame"] [role="gridcell"] {
+    background-color: #06093A !important;
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.1) !important;
+}
+[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] {
+    background-color: rgba(0, 240, 255, 0.08) !important;
+}
+            
+/* ─── WIDGET & TABLE OVERRIDES (CYAN/SLATE THEME) ─── */
 section[data-testid="stSidebar"] {
     background: rgba(15, 23, 42, 0.95) !important;
     border-right: 1px solid var(--border-glow) !important;
@@ -183,19 +224,55 @@ section[data-testid="stSidebar"] {
 div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; border-color: rgba(0, 240, 255, 0.2) !important; }
 .stMultiSelect [data-baseweb="tag"] { background: rgba(0, 240, 255, 0.1) !important; border: 1px solid var(--cyan) !important; color: var(--text-primary) !important; }
 
-[data-testid="stDataFrame"] { border: 1px solid var(--border-glow) !important; border-radius: 12px !important; overflow: hidden !important; background: #06093A !important; }
-[data-testid="stDataFrame"] [role="columnheader"] { background: #0A0E45 !important; color: var(--cyan) !important; font-weight: 600 !important; border-bottom: 1px solid var(--border-glow) !important; }
-[data-testid="stDataFrame"] [role="gridcell"] { background: #06093A !important; color: var(--text-primary) !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
-[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] { background: rgba(0, 240, 255, 0.08) !important; }
+/* ─── DATAFRAME / TABLE RE-STYLING (DEEP NAVY, NO PURPLE) ─── */
+[data-testid="stDataFrame"] { 
+    border: 1px solid var(--border-glow) !important; 
+    border-radius: 12px !important; 
+    overflow: hidden !important; 
+    background: #06093A !important; 
+}
+[data-testid="stDataFrame"] [role="columnheader"] { 
+    background: #0A0E45 !important; 
+    color: var(--cyan) !important; 
+    font-weight: 600 !important;
+    border-bottom: 1px solid var(--border-glow) !important;
+}
+[data-testid="stDataFrame"] [role="gridcell"] { 
+    background: #06093A !important; 
+    color: var(--text-primary) !important; 
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] { 
+    background: rgba(0, 240, 255, 0.08) !important; 
+}
 [data-testid="stDataFrame"] progress { accent-color: var(--cyan) !important; }
 
-.plat-card { background: var(--card-bg); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; text-align: center; }
+/* PLATFORM CARDS */
+.plat-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 20px; text-align: center;
+}
 
-[data-testid="stTextInput"] div[data-baseweb="input"] { background-color: rgba(15, 23, 42, 0.6) !important; border: 1px solid var(--cyan) !important; border-radius: 8px !important; transition: all 0.3s ease; }
-[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
-[data-testid="stTextInput"] input { color: var(--text-primary) !important; }
+/* ─── CUSTOM SEARCH BAR ─── */
+[data-testid="stTextInput"] div[data-baseweb="input"] {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid var(--cyan) !important; /* Normal Blue/Cyan border */
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+}
+/* Purple/Magenta glow when selected */
+[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within {
+    border: 1px solid var(--magenta) !important; 
+    box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important;
+}
+[data-testid="stTextInput"] input {
+    color: var(--text-primary) !important;
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 # ─── 3. PLOTLY CHART THEME ENGINE ──────────────────────────────────────────────
 def fancy_layout(h=380):
@@ -267,7 +344,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(f"<div style='font-family:JetBrains Mono; font-size:0.75rem; color:#94A3B8;'>UPDATED: <span style='color:#00F0FF'>{datetime.now().strftime('%d %b %Y')}</span><br>LIVE DB HOOK ACTIVE</div>", unsafe_allow_html=True)
 
-# Apply Filters
+# Apply Filters (Exact logic from your file)
 filt = jobs_df.copy()
 if not filt.empty:
     if sel_cities: filt = filt[filt["city_normalized"].isin(sel_cities)]
@@ -312,7 +389,7 @@ for col, icon, val, label in metrics:
     with col:
         st.markdown(f'<div class="glass-card"><span class="kpi-icon">{icon}</span><div class="kpi-value">{val}</div><div class="kpi-label">{label}</div></div>', unsafe_allow_html=True)
 
-# ─── SKILLS INTEL ──────────────────────────────────────────────────────────────
+# ─── SKILLS INTEL (Using exact previous logic to fix errors) ───────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">⚡ <span>Skills Intelligence</span></div>', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
@@ -375,7 +452,7 @@ if not sk_filt.empty:
             </div>
             """, unsafe_allow_html=True)
 
-# ─── GEO ANALYSIS ──────────────────────────────────────────────────────────────
+# ─── GEO ANALYSIS (Fixed index logic) ──────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🗺️ <span>Geo & Market Logistics</span></div>', unsafe_allow_html=True)
 col3, col4 = st.columns(2)
 with col3:
@@ -390,6 +467,7 @@ with col3:
         st.plotly_chart(fig4, use_container_width=True)
 
 with col4:
+    # Beautiful Donut Chart restored properly!
     if not role_df.empty:
         rt = role_df.groupby("role_category")["job_count"].sum().reset_index()
         fig7 = go.Figure(go.Pie(
@@ -401,7 +479,7 @@ with col4:
         fig7.update_layout(**L7)
         st.plotly_chart(fig7, use_container_width=True)
 
-# City Intelligence Matrix
+# ─── RESTORED: CITY INTELLIGENCE MATRIX ───
 if not city_df.empty:
     st.markdown('<div class="section-title" style="margin-top: 20px;">🏙️ <span>City Intelligence Matrix</span></div>', unsafe_allow_html=True)
     tbl = city_df.groupby("city").agg(Jobs=("job_count","sum"), Salary=("avg_salary_min","mean"), Fresher=("fresher_pct","mean")).reset_index()
@@ -415,13 +493,16 @@ if not city_df.empty:
             "Fresher %": st.column_config.ProgressColumn("Fresher %", min_value=0, max_value=100, format="%.1f%%"),
         })
 
-# ─── MARKET INTELLIGENCE ───────────────────────────────────────────────────────
+# ─── RESTORED: MARKET INTELLIGENCE ───
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🧠 <span>Market Intelligence</span></div>', unsafe_allow_html=True)
 
 col5, col6 = st.columns([1.2, 1])
 with col5:
     if not company_df.empty:
         co = company_df.groupby("company")["job_count"].sum().sort_values(ascending=True).tail(15).reset_index()
+        
+        # --- FIX 2: DISTINCT CATEGORICAL COLORS FOR COMPANIES ---
+        # Cycles through your existing COLORS list so every company stands out
         bar_colors = [COLORS[i % len(COLORS)] for i in range(len(co))]
         
         fig6 = go.Figure(go.Bar(
@@ -430,7 +511,7 @@ with col5:
             hovertemplate='<b>%{y}</b><br>%{x} openings<extra></extra>'
         ))
         L6 = fancy_layout(450); L6['title'] = "Top 15 Hiring Companies"
-        L6['xaxis_title'] = "Total Active Job Openings" 
+        L6['xaxis_title'] = "Total Active Job Openings" # Forces the X-axis label
         fig6.update_layout(**L6)
         st.plotly_chart(fig6, use_container_width=True)
 
@@ -439,7 +520,10 @@ with col6:
         ed = filt["exp_min"].dropna().astype(int).clip(0,12).value_counts().sort_index().reset_index()
         ed.columns = ["Exp","Count"]
         
+        # Swapped the bright green for your corporate blue to match the theme better
         fig8 = go.Figure(go.Bar(x=ed["Exp"], y=ed["Count"], marker=dict(color='#3B82F6')))
+        
+        # --- FIX 3: EXPLICIT AXES DEFINITIONS ---
         L8 = fancy_layout(450)
         L8['title'] = "Experience Distribution"
         L8['xaxis'] = dict(
@@ -453,28 +537,36 @@ with col6:
             gridcolor='rgba(255,255,255,0.05)',
             showline=True, linewidth=1, linecolor='rgba(255,255,255,0.2)'
         )
+        
         fig8.update_layout(**L8)
         st.plotly_chart(fig8, use_container_width=True)
 
-# ─── ADVANCED CORRELATION ANALYTICS ────────────────────────────────────────────
+# ─── ADVANCED CORRELATION ANALYTICS (THE HEAVY HITTERS) ───
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🧬 <span>Multivariate Analysis</span></div>', unsafe_allow_html=True)
 
 col7, col8 = st.columns(2)
 
 with col7:
+    # 1. SKILL VS ROLE HEATMAP
     if not filt.empty and 'skills_extracted' in filt.columns:
+        # Explode the comma-separated skills into distinct rows for cross-tabulation
         s_df = filt.dropna(subset=['skills_extracted', 'role_category']).copy()
         s_df['skill_list'] = s_df['skills_extracted'].str.split(',')
         s_df = s_df.explode('skill_list')
         s_df['skill_list'] = s_df['skill_list'].str.strip().str.title()
         
+        # Isolate the top 12 most demanded skills overall to keep the chart clean
         top_12_skills = s_df['skill_list'].value_counts().nlargest(12).index
         s_df_top = s_df[s_df['skill_list'].isin(top_12_skills)]
         
+        # Create a pivot table showing the density of each skill within each role
         pivot = pd.crosstab(s_df_top['role_category'], s_df_top['skill_list'])
         
         fig_hm = go.Figure(data=go.Heatmap(
-            z=pivot.values, x=pivot.columns, y=pivot.index,
+            z=pivot.values,
+            x=pivot.columns,
+            y=pivot.index,
+            # Replaced 'Tealgrn' with a custom deep-slate to bright-cyan gradient
             colorscale=[[0, '#0F172A'], [0.5, '#3B82F6'], [1, '#00F0FF']], 
             hoverongaps=False,
             hovertemplate='<b>Role:</b> %{y}<br><b>Skill:</b> %{x}<br><b>Mentions:</b> %{z}<extra></extra>'
@@ -486,27 +578,33 @@ with col7:
         st.plotly_chart(fig_hm, use_container_width=True)
 
 with col8:
+    # 2. SALARY SPREAD BY ROLE (BOX PLOT)
     if not filt.empty and 'salary_min_lpa' in filt.columns:
+        # Filter out 0s and extreme outliers (e.g., > 50 LPA) to show the realistic market spread
         sal_df = filt[(filt['salary_min_lpa'] > 0) & (filt['salary_min_lpa'] <= 50)].copy()
+        
         fig_box = go.Figure()
+        # Grab the top 6 most common roles to map
         top_roles = sal_df['role_category'].value_counts().nlargest(6).index
         
         for idx, role in enumerate(top_roles):
             role_data = sal_df[sal_df['role_category'] == role]['salary_min_lpa']
             fig_box.add_trace(go.Box(
-                y=role_data, name=role, marker_color=COLORS[idx % len(COLORS)],
-                boxpoints='outliers',
+                y=role_data, 
+                name=role,
+                marker_color=COLORS[idx % len(COLORS)],
+                boxpoints='outliers', # Shows extreme values as dots outside the whiskers
                 hovertemplate='<b>%{x}</b><br>Salary: ₹%{y} LPA<extra></extra>'
             ))
             
         L_box = fancy_layout(450)
         L_box['title'] = "Realistic Salary Distribution (LPA)"
         L_box['yaxis_title'] = "Minimum Salary (LPA)"
-        L_box['showlegend'] = False
+        L_box['showlegend'] = False # Legend isn't needed since X-axis holds the role names
         fig_box.update_layout(**L_box)
         st.plotly_chart(fig_box, use_container_width=True)
 
-# ─── PLATFORM BREAKDOWN ────────────────────────────────────────────────────────
+# ─── RESTORED: PLATFORM BREAKDOWN CARDS ───
 st.markdown('<div class="section-title" style="margin-top: 20px;">🌐 <span>Platform Breakdown</span></div>', unsafe_allow_html=True)
 try:
     conn2 = sqlite3.connect(DB_PATH)
@@ -544,8 +642,8 @@ if not filt.empty:
     show = [c for c in ["job_title","company","city_normalized","role_category","experience","skills_extracted","scrape_date"] if c in latest.columns]
     disp = latest[show].head(100)
     st.dataframe(disp, use_container_width=True, hide_index=True)
-
-# ─── 7. CUSTOM FOOTER ──────────────────────────────────────────────────────────
+    
+# ─── 7. CUSTOM FOOTER (RESTORED) ───
 st.markdown(f"""
 <div style='margin-top: 40px; padding: 20px 0; border-top: 1px solid rgba(0, 240, 255, 0.2); display: flex; justify-content: space-between; align-items: center;'>
     <div style='font-family: "JetBrains Mono", monospace; font-size: 0.75rem; color: #94A3B8; letter-spacing: 1px; text-transform: uppercase;'>
