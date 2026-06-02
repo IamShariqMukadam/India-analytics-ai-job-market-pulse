@@ -52,22 +52,37 @@ header[data-testid="stHeader"], .stAppHeader {
     pointer-events: none !important;
 }
 
-/* AGGRESSIVELY HIDE ALL CLUTTER, BADGES, AND LOGOS COMPLETELY */
+/* Hide native header buttons, toolbars, and menus */
 header[data-testid="stHeader"] button,
 header[data-testid="stHeader"] a,
 .stDeployButton, 
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
 [data-testid="stStatusWidget"], 
-.viewerBadge_container,
-.viewerBadge_link,
 #MainMenu, 
 footer {
-    display: none !important;
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
     position: absolute !important;
+}
+
+/* ─── THE BOTTOM RIGHT VIEWER BADGE (GITHUB ONLY) ─── */
+.viewerBadge_container {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    bottom: 25px !important;
+    right: 25px !important;
+    top: auto !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+}
+/* Surgically hide the Streamlit logo/crown inside the badge, leaving only GitHub */
+.viewerBadge_container a[href*="streamlit.io"],
+.viewerBadge_link[href*="streamlit.io"] {
+    display: none !important;
 }
 
 /* Permanently hide native toggles */
@@ -129,15 +144,25 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
-/* ─── MOBILE RESPONSIVENESS FIXES (ULTIMATE SCROLL FIX) ─── */
+/* ─── MOBILE RESPONSIVENESS FIXES (ULTIMATE SCROLL & ALIGN FIX) ─── */
 @media (max-width: 768px) {
     .block-container { 
         padding: 1rem !important; 
-        padding-bottom: 90px !important; /* Make room for bottom button */
+        padding-bottom: 90px !important; 
     }
-    /* Force structural stacking for columns */
-    [data-testid="stHorizontalBlock"] { flex-direction: column !important; gap: 20px !important; }
-    [data-testid="column"] { width: 100% !important; min-width: 100% !important; }
+    
+    /* Perfect Center Alignment for Columns and Cards */
+    [data-testid="stHorizontalBlock"] { flex-direction: column !important; gap: 15px !important; }
+    [data-testid="column"] { width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; }
+    
+    .glass-card, .plat-card { 
+        width: 100% !important; 
+        margin: 0 auto !important; 
+        display: flex !important; 
+        flex-direction: column !important; 
+        align-items: center !important; 
+        justify-content: center !important; 
+    }
     
     /* Scale typography down */
     .title-glow { font-size: 1.5rem !important; line-height: 1.3 !important; }
@@ -284,8 +309,7 @@ def fancy_layout(h=380):
         plot_bgcolor='rgba(0,0,0,0)', 
         height=h,
         font=dict(family='Outfit, sans-serif', color='#F8FAFC', size=13),
-        margin=dict(l=10, r=10, t=30, b=10),
-        # automargin=True forces Plotly to recalculate spacing so text is NEVER cut off
+        margin=dict(l=10, r=10, t=30, b=40), # Base margin
         xaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8'), automargin=True),
         yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8'), automargin=True),
         hoverlabel=dict(bgcolor='rgba(15, 23, 42, 0.9)', bordercolor='#00F0FF', font=dict(family='JetBrains Mono')),
@@ -441,6 +465,7 @@ if not sk_filt.empty:
                 d = bi[bi["skill"]==skill]; c = bi_c.get(skill,"#fff")
                 fig3.add_trace(go.Scatter(x=d["week"], y=d["mention_count"], name=skill.title(), line=dict(color=c, width=3), mode='lines+markers'))
             L3 = fancy_layout(280); L3['legend'] = dict(orientation='h', y=1.2)
+            L3['margin'] = dict(l=10, r=10, t=30, b=90) # Forced huge bottom margin for labels
             fig3.update_layout(**L3)
             L3['xaxis'].update(tickangle=-45, nticks=10, automargin=True)
             L3['yaxis_title'] = "Weekly Mentions"
@@ -468,6 +493,7 @@ with col3:
             marker=dict(color=ct["job_count"], colorscale='Tealgrn'),
         ))
         L4 = fancy_layout(320); L4['title'] = "Job Volume by Hub"
+        L4['margin'] = dict(l=10, r=10, t=30, b=100) # Forced huge bottom margin for labels
         L4['xaxis'].update(tickangle=-45, automargin=True)
         fig4.update_layout(**L4)
         st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
@@ -566,6 +592,7 @@ with col7:
             hovertemplate='<b>Role:</b> %{y}<br><b>Skill:</b> %{x}<br><b>Mentions:</b> %{z}<extra></extra>'
         ))
         L_hm = fancy_layout(450); L_hm['title'] = "Skill Dependency Matrix by Role"
+        L_hm['margin'] = dict(l=10, r=10, t=30, b=120) # Forced huge bottom margin for labels
         L_hm['xaxis'].update(tickangle=-45, gridcolor='rgba(255,255,255,0)', automargin=True)
         L_hm['yaxis'].update(gridcolor='rgba(255,255,255,0)', automargin=True)
         fig_hm.update_layout(**L_hm)
@@ -592,6 +619,7 @@ with col8:
         L_box = fancy_layout(450)
         L_box['title'] = "Realistic Salary Distribution (LPA)"
         L_box['yaxis_title'] = "Minimum Salary (LPA)"
+        L_box['margin'] = dict(l=10, r=10, t=30, b=120) # Forced huge bottom margin for labels
         L_box['xaxis'].update(tickangle=-45, automargin=True)
         L_box['showlegend'] = False 
         fig_box.update_layout(**L_box)
