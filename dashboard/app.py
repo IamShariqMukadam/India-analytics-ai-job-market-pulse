@@ -18,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── 2. PREMIUM DARK GLASSMORPHISM CSS (EXTREME HEADER OVERRIDE) ──────────────
+# ─── 2. PREMIUM DARK GLASSMORPHISM CSS (FLOATING BOTTOM MENU) ──────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -44,232 +44,145 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── EXTREME MEASURE: THE "LAST BUTTON STANDING" STRATEGY ─── */
-
-/* 1. Make the parent header completely transparent but keep it in the DOM */
+/* ─── 1. NEUTRALIZE THE HEADER (Leave it invisible but alive) ─── */
 header[data-testid="stHeader"] { 
     background: transparent !important; 
     box-shadow: none !important;
     z-index: 999990 !important;
+    pointer-events: none !important;
 }
 
-/* 2. Assassinate EVERY Cloud injection (Toolbar, Deploy Button, GitHub Link, Viewer Badges) */
+/* Hide cloud injection clutter */
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
 [data-testid="stStatusWidget"], 
 .viewerBadge_container, 
 .viewerBadge_link,
 #MainMenu, 
-footer,
-header[data-testid="stHeader"] a {
+footer {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
-    pointer-events: none !important;
 }
 
-/* 3. Because we hid everything else, the ONLY button left in the header is the sidebar toggle.
-      We style it directly using generic HTML tags so Streamlit can't rename it to hide it. */
-header[data-testid="stHeader"] button {
-    display: inline-flex !important;
+/* ─── 2. THE FLOATING BOTTOM-LEFT CYBERPUNK BUTTON ─── */
+/* We target the button and forcefully move it to the bottom left of the screen */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
+    display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    background-color: #0F172A !important;
-    border: 1px solid #00F0FF !important;
-    border-radius: 8px !important;
-    margin-top: 15px !important;
-    margin-left: 15px !important;
-    pointer-events: auto !important; /* Re-enable clicks */
-    z-index: 999999 !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
+    position: fixed !important;
+    top: auto !important;       /* Removes it from the top */
+    bottom: 25px !important;    /* Pins it to the bottom */
+    left: 25px !important;      /* Pins it to the left */
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 12px !important;
+    background: #0F172A !important;
+    z-index: 9999999 !important; /* Maximum z-index so nothing covers it */
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    pointer-events: auto !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3) !important;
+    overflow: hidden !important;
 }
 
-/* Force the SVG Icon to be Cyan */
-header[data-testid="stHeader"] button svg {
+/* Layer 0: The Rotating Cyberpunk Glow Animation */
+[data-testid="collapsedControl"]::before,
+[data-testid="stSidebarCollapsedControl"]::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 250% !important; height: 250% !important;
+    top: -75% !important; left: -75% !important;
+    background: conic-gradient(
+        transparent 0deg,
+        transparent 240deg,
+        rgba(0, 240, 255, 0.9) 240deg,
+        #3B82F6 360deg
+    ) !important;
+    animation: border-trace 2s linear infinite !important;
+    z-index: 0 !important;
+}
+
+/* Layer 1: The Inner Dark Cutout */
+[data-testid="collapsedControl"]::after,
+[data-testid="stSidebarCollapsedControl"]::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: 3px !important; /* This 3px inset creates the glowing border effect */
+    background: #0F172A !important;
+    border-radius: 9px !important;
+    z-index: 1 !important;
+    transition: background 0.3s ease !important;
+}
+
+[data-testid="collapsedControl"]:hover::after,
+[data-testid="stSidebarCollapsedControl"]:hover::after {
+    background: #1E293B !important;
+}
+
+/* Layer 2: The SVG Icon */
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {
     fill: #00F0FF !important;
     color: #00F0FF !important;
+    width: 26px !important;
+    height: 26px !important;
+    position: relative !important;
+    z-index: 2 !important; /* Placed on top of the dark cutout */
 }
 
-/* Hover Effect */
-header[data-testid="stHeader"] button:hover {
-    background-color: #1E293B !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.5) !important;
+@keyframes border-trace {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* Push the main app content down slightly so it doesn't clip under our new fixed button */
-.block-container { padding: 4rem 2.5rem 1.5rem 2.5rem !important; max-width: 100% !important; }
+/* Push the main app content down slightly */
+.block-container { padding: 3rem 2.5rem 1.5rem 2.5rem !important; max-width: 100% !important; }
 
 /* ─── FANCY HEADER ─── */
 .premium-header {
     background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-glow);
-    border-radius: 16px;
-    padding: 30px;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-glow); border-radius: 16px;
+    padding: 30px; text-align: center; margin-bottom: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
-.title-glow {
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-}
-.title-glow span {
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.live-pulse {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid var(--cyan);
-    color: var(--cyan);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-top: 15px;
-    letter-spacing: 2px;
-}
-.pulse-dot {
-    width: 8px; height: 8px; background-color: var(--cyan); border-radius: 50%;
-    animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
-}
+.title-glow { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #FFFFFF, #E2E8F0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
+.title-glow span { background: linear-gradient(90deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.live-pulse { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-top: 15px; letter-spacing: 2px; }
+.pulse-dot { width: 8px; height: 8px; background-color: var(--cyan); border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); } }
 
-/* ─── GLASSMORPHISM METRIC CARDS (WITH TOP BORDER) ─── */
+/* ─── GLASSMORPHISM METRIC CARDS ─── */
 .glass-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-top: 3px solid var(--cyan) !important;
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+    background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05); border-top: 3px solid var(--cyan) !important;
+    border-radius: 16px; padding: 24px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
 }
-.glass-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--border-glow);
-    box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.15);
-}
+.glass-card:hover { transform: translateY(-5px); border-color: var(--border-glow); box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.15); }
 .kpi-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
-.kpi-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.1;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
-.kpi-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 8px;
-    font-weight: 600;
-}
+.kpi-value { font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700; color: var(--text-primary); line-height: 1.1; text-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
+.kpi-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; font-weight: 600; }
 
-/* ─── SECTION HEADERS (GRADIENT TEXT) ─── */
+/* ─── SECTION HEADERS ─── */
 .fancy-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 40px 0 20px 0; }
-.section-title { 
-    display: flex; align-items: center; gap: 12px; font-size: 1.25rem; 
-    font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; 
-}
-.section-title span {
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+.section-title { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+.section-title span { background: linear-gradient(90deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-/* ─── FIXED TABLE OVERRIDES (VISIBLE TEXT & NAVY THEME) ─── */
-[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div {
-    background-color: #06093A !important;
-}
-[data-testid="stDataFrame"] [role="columnheader"] {
-    background-color: #0A0E45 !important;
-    color: var(--cyan) !important;
-    border-bottom: 2px solid var(--border-glow) !important;
-}
-[data-testid="stDataFrame"] [role="gridcell"] {
-    background-color: #06093A !important;
-    color: var(--text-primary) !important;
-    border-bottom: 1px solid rgba(0, 240, 255, 0.1) !important;
-}
-[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] {
-    background-color: rgba(0, 240, 255, 0.08) !important;
-}
-            
-/* ─── WIDGET & TABLE OVERRIDES (CYAN/SLATE THEME) ─── */
-section[data-testid="stSidebar"] {
-    background: rgba(15, 23, 42, 0.95) !important;
-    border-right: 1px solid var(--border-glow) !important;
-    backdrop-filter: blur(20px);
-}
+/* ─── COMPONENT OVERRIDES ─── */
+[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div { background-color: #06093A !important; }
+[data-testid="stDataFrame"] [role="columnheader"] { background-color: #0A0E45 !important; color: var(--cyan) !important; border-bottom: 2px solid var(--border-glow) !important; }
+[data-testid="stDataFrame"] [role="gridcell"] { background-color: #06093A !important; color: var(--text-primary) !important; border-bottom: 1px solid rgba(0, 240, 255, 0.1) !important; }
+[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] { background-color: rgba(0, 240, 255, 0.08) !important; }
+section[data-testid="stSidebar"] { background: rgba(15, 23, 42, 0.95) !important; border-right: 1px solid var(--border-glow) !important; backdrop-filter: blur(20px); }
 div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; border-color: rgba(0, 240, 255, 0.2) !important; }
 .stMultiSelect [data-baseweb="tag"] { background: rgba(0, 240, 255, 0.1) !important; border: 1px solid var(--cyan) !important; color: var(--text-primary) !important; }
-
-/* ─── DATAFRAME / TABLE RE-STYLING (DEEP NAVY, NO PURPLE) ─── */
-[data-testid="stDataFrame"] { 
-    border: 1px solid var(--border-glow) !important; 
-    border-radius: 12px !important; 
-    overflow: hidden !important; 
-    background: #06093A !important; 
-}
-[data-testid="stDataFrame"] [role="columnheader"] { 
-    background: #0A0E45 !important; 
-    color: var(--cyan) !important; 
-    font-weight: 600 !important;
-    border-bottom: 1px solid var(--border-glow) !important;
-}
-[data-testid="stDataFrame"] [role="gridcell"] { 
-    background: #06093A !important; 
-    color: var(--text-primary) !important; 
-    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
-}
-[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] { 
-    background: rgba(0, 240, 255, 0.08) !important; 
-}
-[data-testid="stDataFrame"] progress { accent-color: var(--cyan) !important; }
-
-/* PLATFORM CARDS */
-.plat-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
-    padding: 20px; text-align: center;
-}
-
-/* ─── CUSTOM SEARCH BAR ─── */
-[data-testid="stTextInput"] div[data-baseweb="input"] {
-    background-color: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid var(--cyan) !important; /* Normal Blue/Cyan border */
-    border-radius: 8px !important;
-    transition: all 0.3s ease;
-}
-/* Purple/Magenta glow when selected */
-[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within {
-    border: 1px solid var(--magenta) !important; 
-    box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important;
-}
-[data-testid="stTextInput"] input {
-    color: var(--text-primary) !important;
-}
+.plat-card { background: var(--card-bg); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; text-align: center; }
+[data-testid="stTextInput"] div[data-baseweb="input"] { background-color: rgba(15, 23, 42, 0.6) !important; border: 1px solid var(--cyan) !important; border-radius: 8px !important; transition: all 0.3s ease; }
+[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
+[data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -344,7 +257,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(f"<div style='font-family:JetBrains Mono; font-size:0.75rem; color:#94A3B8;'>UPDATED: <span style='color:#00F0FF'>{datetime.now().strftime('%d %b %Y')}</span><br>LIVE DB HOOK ACTIVE</div>", unsafe_allow_html=True)
 
-# Apply Filters (Exact logic from your file)
+# Apply Filters
 filt = jobs_df.copy()
 if not filt.empty:
     if sel_cities: filt = filt[filt["city_normalized"].isin(sel_cities)]
@@ -389,7 +302,7 @@ for col, icon, val, label in metrics:
     with col:
         st.markdown(f'<div class="glass-card"><span class="kpi-icon">{icon}</span><div class="kpi-value">{val}</div><div class="kpi-label">{label}</div></div>', unsafe_allow_html=True)
 
-# ─── SKILLS INTEL (Using exact previous logic to fix errors) ───────────────────
+# ─── SKILLS INTEL ──────────────────────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">⚡ <span>Skills Intelligence</span></div>', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
@@ -452,7 +365,7 @@ if not sk_filt.empty:
             </div>
             """, unsafe_allow_html=True)
 
-# ─── GEO ANALYSIS (Fixed index logic) ──────────────────────────────────────────
+# ─── GEO ANALYSIS ──────────────────────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🗺️ <span>Geo & Market Logistics</span></div>', unsafe_allow_html=True)
 col3, col4 = st.columns(2)
 with col3:
@@ -467,7 +380,6 @@ with col3:
         st.plotly_chart(fig4, use_container_width=True)
 
 with col4:
-    # Beautiful Donut Chart restored properly!
     if not role_df.empty:
         rt = role_df.groupby("role_category")["job_count"].sum().reset_index()
         fig7 = go.Figure(go.Pie(
@@ -479,7 +391,7 @@ with col4:
         fig7.update_layout(**L7)
         st.plotly_chart(fig7, use_container_width=True)
 
-# ─── RESTORED: CITY INTELLIGENCE MATRIX ───
+# City Intelligence Matrix
 if not city_df.empty:
     st.markdown('<div class="section-title" style="margin-top: 20px;">🏙️ <span>City Intelligence Matrix</span></div>', unsafe_allow_html=True)
     tbl = city_df.groupby("city").agg(Jobs=("job_count","sum"), Salary=("avg_salary_min","mean"), Fresher=("fresher_pct","mean")).reset_index()
@@ -493,7 +405,7 @@ if not city_df.empty:
             "Fresher %": st.column_config.ProgressColumn("Fresher %", min_value=0, max_value=100, format="%.1f%%"),
         })
 
-# ─── RESTORED: MARKET INTELLIGENCE ───
+# ─── MARKET INTELLIGENCE ───────────────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🧠 <span>Market Intelligence</span></div>', unsafe_allow_html=True)
 
 col5, col6 = st.columns([1.2, 1])
@@ -501,8 +413,6 @@ with col5:
     if not company_df.empty:
         co = company_df.groupby("company")["job_count"].sum().sort_values(ascending=True).tail(15).reset_index()
         
-        # --- FIX 2: DISTINCT CATEGORICAL COLORS FOR COMPANIES ---
-        # Cycles through your existing COLORS list so every company stands out
         bar_colors = [COLORS[i % len(COLORS)] for i in range(len(co))]
         
         fig6 = go.Figure(go.Bar(
@@ -511,7 +421,7 @@ with col5:
             hovertemplate='<b>%{y}</b><br>%{x} openings<extra></extra>'
         ))
         L6 = fancy_layout(450); L6['title'] = "Top 15 Hiring Companies"
-        L6['xaxis_title'] = "Total Active Job Openings" # Forces the X-axis label
+        L6['xaxis_title'] = "Total Active Job Openings" 
         fig6.update_layout(**L6)
         st.plotly_chart(fig6, use_container_width=True)
 
@@ -520,10 +430,8 @@ with col6:
         ed = filt["exp_min"].dropna().astype(int).clip(0,12).value_counts().sort_index().reset_index()
         ed.columns = ["Exp","Count"]
         
-        # Swapped the bright green for your corporate blue to match the theme better
         fig8 = go.Figure(go.Bar(x=ed["Exp"], y=ed["Count"], marker=dict(color='#3B82F6')))
         
-        # --- FIX 3: EXPLICIT AXES DEFINITIONS ---
         L8 = fancy_layout(450)
         L8['title'] = "Experience Distribution"
         L8['xaxis'] = dict(
@@ -541,7 +449,7 @@ with col6:
         fig8.update_layout(**L8)
         st.plotly_chart(fig8, use_container_width=True)
 
-# ─── ADVANCED CORRELATION ANALYTICS (THE HEAVY HITTERS) ───
+# ─── ADVANCED CORRELATION ANALYTICS ────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🧬 <span>Multivariate Analysis</span></div>', unsafe_allow_html=True)
 
 col7, col8 = st.columns(2)
@@ -549,24 +457,20 @@ col7, col8 = st.columns(2)
 with col7:
     # 1. SKILL VS ROLE HEATMAP
     if not filt.empty and 'skills_extracted' in filt.columns:
-        # Explode the comma-separated skills into distinct rows for cross-tabulation
         s_df = filt.dropna(subset=['skills_extracted', 'role_category']).copy()
         s_df['skill_list'] = s_df['skills_extracted'].str.split(',')
         s_df = s_df.explode('skill_list')
         s_df['skill_list'] = s_df['skill_list'].str.strip().str.title()
         
-        # Isolate the top 12 most demanded skills overall to keep the chart clean
         top_12_skills = s_df['skill_list'].value_counts().nlargest(12).index
         s_df_top = s_df[s_df['skill_list'].isin(top_12_skills)]
         
-        # Create a pivot table showing the density of each skill within each role
         pivot = pd.crosstab(s_df_top['role_category'], s_df_top['skill_list'])
         
         fig_hm = go.Figure(data=go.Heatmap(
             z=pivot.values,
             x=pivot.columns,
             y=pivot.index,
-            # Replaced 'Tealgrn' with a custom deep-slate to bright-cyan gradient
             colorscale=[[0, '#0F172A'], [0.5, '#3B82F6'], [1, '#00F0FF']], 
             hoverongaps=False,
             hovertemplate='<b>Role:</b> %{y}<br><b>Skill:</b> %{x}<br><b>Mentions:</b> %{z}<extra></extra>'
@@ -580,11 +484,9 @@ with col7:
 with col8:
     # 2. SALARY SPREAD BY ROLE (BOX PLOT)
     if not filt.empty and 'salary_min_lpa' in filt.columns:
-        # Filter out 0s and extreme outliers (e.g., > 50 LPA) to show the realistic market spread
         sal_df = filt[(filt['salary_min_lpa'] > 0) & (filt['salary_min_lpa'] <= 50)].copy()
         
         fig_box = go.Figure()
-        # Grab the top 6 most common roles to map
         top_roles = sal_df['role_category'].value_counts().nlargest(6).index
         
         for idx, role in enumerate(top_roles):
@@ -593,18 +495,18 @@ with col8:
                 y=role_data, 
                 name=role,
                 marker_color=COLORS[idx % len(COLORS)],
-                boxpoints='outliers', # Shows extreme values as dots outside the whiskers
+                boxpoints='outliers',
                 hovertemplate='<b>%{x}</b><br>Salary: ₹%{y} LPA<extra></extra>'
             ))
             
         L_box = fancy_layout(450)
         L_box['title'] = "Realistic Salary Distribution (LPA)"
         L_box['yaxis_title'] = "Minimum Salary (LPA)"
-        L_box['showlegend'] = False # Legend isn't needed since X-axis holds the role names
+        L_box['showlegend'] = False 
         fig_box.update_layout(**L_box)
         st.plotly_chart(fig_box, use_container_width=True)
 
-# ─── RESTORED: PLATFORM BREAKDOWN CARDS ───
+# ─── PLATFORM BREAKDOWN ────────────────────────────────────────────────────────
 st.markdown('<div class="section-title" style="margin-top: 20px;">🌐 <span>Platform Breakdown</span></div>', unsafe_allow_html=True)
 try:
     conn2 = sqlite3.connect(DB_PATH)
@@ -626,7 +528,6 @@ try:
             </div>""", unsafe_allow_html=True)
 except Exception as e:
     pass
-
 
 # ─── LIVE DATA SCRAPER LOG ─────────────────────────────────────────────────────
 st.markdown('<div class="fancy-divider"></div><div class="section-title">🔍 <span>Production Database Registry</span></div>', unsafe_allow_html=True)
