@@ -44,31 +44,46 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE HEADER & CLUTTER (FIXED POINTER EVENTS) ─── */
+/* ─── 1. HIDE CLUTTER, KEEP CONTAINER ALIVE ─── */
+/* CRITICAL: We cannot hide or disable pointer events on the header, or the button dies. */
 header[data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    /* Removed pointer-events: none !important; so the button works on cloud */
 }
-[data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
-.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 2. ISOLATE & ANIMATE THE CYBERPUNK BUTTON ─── */
+/* Specifically hide the right-side deployment clutter, NOT the whole header */
+[data-testid="stToolbar"], 
+[data-testid="stDecoration"], 
+#MainMenu, 
+footer { 
+    display: none !important; 
+}
+
+.block-container { 
+    padding: 1.5rem 2.5rem !important; 
+    max-width: 100% !important; 
+}
+
+/* ─── 2. THE UNBREAKABLE CYBERPUNK BUTTON ─── */
+/* Targeting every known data-testid Streamlit Cloud uses for the toggle */
 [data-testid="collapsedControl"], 
-[data-testid="stSidebarCollapsedControl"] {
+[data-testid="stSidebarCollapsedControl"],
+.stAppHeader button[kind="header"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     position: fixed !important;
     top: 20px !important;
     left: 20px !important;
     width: 52px !important;
     height: 52px !important;
     border-radius: 12px !important;
-    overflow: hidden !important;
     background: #0F172A !important;
     z-index: 999999 !important;
-    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+    border: none !important;
 }
 
 /* The Animated Glowing Border */
@@ -88,9 +103,10 @@ header[data-testid="stHeader"] {
     z-index: 0 !important;
 }
 
-/* The Inner Dark Button */
+/* The Inner Dark Button Layer */
 [data-testid="collapsedControl"] button,
-[data-testid="stSidebarCollapsedControl"] button {
+[data-testid="stSidebarCollapsedControl"] button,
+.stAppHeader button[kind="header"] {
     position: absolute !important;
     inset: 3px !important;
     z-index: 2 !important;
@@ -110,20 +126,21 @@ header[data-testid="stHeader"] {
     background: #1E293B !important;
 }
 
-/* The SVG Icon */
+/* The SVG Icon (Forcing it to be Cyan) */
 [data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapsedControl"] svg {
-    fill: var(--cyan) !important;
-    color: var(--cyan) !important;
+[data-testid="stSidebarCollapsedControl"] svg,
+.stAppHeader button[kind="header"] svg {
+    fill: #00F0FF !important;
+    color: #00F0FF !important;
     width: 24px !important;
     height: 24px !important;
+    z-index: 3 !important;
 }
 
 @keyframes border-trace {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
 /* ─── 3. FANCY HEADER ─── */
 .premium-header {
     background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
