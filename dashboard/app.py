@@ -44,46 +44,51 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. SAFE HEADER (NO POINTER-EVENTS HACKS) ─── */
+/* ─── 1. GHOST THE CLUTTER, TRICK REACT ─── */
 [data-testid="stHeader"] {
     background: transparent !important;
     background-color: transparent !important;
 }
 
-/* Specifically hide only the right-side clutter, leave the rest of the header intact */
+/* CRITICAL FIX: Do NOT use display: none. 
+   We make them invisible but keep them in the DOM so the button doesn't get unmounted. */
 [data-testid="stToolbar"], 
 .viewerBadge_container, 
+.viewerBadge_link,
+[data-testid="stHeader"] a,
 #MainMenu, 
 footer {
-    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 2. STYLING THE NATIVE BUTTON (IN-PLACE) ─── */
-/* We let Streamlit keep the button in its natural DOM flow, just dressing it up */
+/* ─── 2. STYLE THE SURVIVING BUTTON ─── */
+/* We leave its position exactly how Streamlit renders it, just changing the paint job */
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"] {
     background-color: #0F172A !important;
     border: 1px solid #00F0FF !important;
     border-radius: 8px !important;
-    margin-top: 15px !important;
-    margin-left: 15px !important;
+    margin-top: 10px !important;
+    margin-left: 10px !important;
     transition: all 0.3s ease !important;
 }
 
-/* Ensure the icon is Cyan */
+/* Force the icon to be cyan */
 [data-testid="collapsedControl"] svg,
 [data-testid="stSidebarCollapsedControl"] svg {
     fill: #00F0FF !important;
     color: #00F0FF !important;
 }
 
-/* Simple hover effect */
+/* Cyberpunk hover glow */
 [data-testid="collapsedControl"]:hover,
 [data-testid="stSidebarCollapsedControl"]:hover {
     background-color: #1E293B !important;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
 }
 
 /* Ensure the inner button takes up the full space and is clickable */
