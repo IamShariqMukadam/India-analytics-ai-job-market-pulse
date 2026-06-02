@@ -170,9 +170,9 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
     [data-testid="stPlotlyChart"], .stPlotlyChart, .js-plotly-plot, .plotly { 
         touch-action: pan-y !important; 
         width: 100% !important; 
-        padding-bottom: 20px !important;
+        margin-bottom: 20px !important; /* Changed from padding to margin */
+        overflow: hidden !important;    /* Kills the tiny internal scrollbar */
     }
-    
     /* 3. Disable full-screen tap-traps */
     [data-testid="StyledFullScreenButton"], button[title="View fullscreen"] { 
         display: none !important; 
@@ -485,6 +485,7 @@ with col4:
             textinfo='label+percent', textposition='outside'
         ))
         L7 = fancy_layout(320); L7['title'] = "Role Category Split"; L7['showlegend'] = False
+        L7['margin'].update(l=80, r=80) # Adds 80px of extra breathing room on the left/right for the text
         fig7.update_layout(**L7)
         st.plotly_chart(fig7, use_container_width=True)
 
