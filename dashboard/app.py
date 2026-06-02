@@ -52,38 +52,29 @@ header[data-testid="stHeader"], .stAppHeader {
     pointer-events: none !important;
 }
 
-/* Hide native header buttons, toolbars, and menus */
+/* AGGRESSIVELY HIDE ALL CLUTTER, BADGES, AND LOGOS COMPLETELY */
 header[data-testid="stHeader"] button,
 header[data-testid="stHeader"] a,
 .stDeployButton, 
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
 [data-testid="stStatusWidget"], 
+.viewerBadge_container,
+.viewerBadge_link,
 #MainMenu, 
 footer {
+    display: none !important;
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
     position: absolute !important;
 }
 
-/* ─── MOVE STREAMLIT / GITHUB BADGE TO TOP RIGHT ─── */
-.viewerBadge_container {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    bottom: auto !important;
-    top: 15px !important;
-    right: 15px !important;
-    z-index: 999999 !important;
-    pointer-events: auto !important;
-}
-
 /* Permanently hide native toggles */
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarCollapseButton"] {
+    display: none !important;
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
@@ -193,13 +184,13 @@ components.html("""
     
     if (doc.getElementById('cyber-toggle-btn')) return;
 
-    // Create custom master controller floating element with SUITCASE ICON
+    // Create custom master controller floating element with 3-LINE MENU ICON
     const btn = doc.createElement('div');
     btn.id = 'cyber-toggle-btn';
     btn.innerHTML = `
         <div class="cyber-inner">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#00F0FF">
-                <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="#00F0FF">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
             </svg>
         </div>
     `;
@@ -285,7 +276,7 @@ components.html("""
 """, height=0, width=0)
 
 
-# ─── 3. PLOTLY CHART THEME ENGINE ──────────────────────────────────────────────
+# ─── 3. PLOTLY CHART THEME ENGINE (OPTIMIZED FOR MOBILE) ───────────────────────
 def fancy_layout(h=380):
     """Generates a perfect dark-mode glass layout for Plotly."""
     return dict(
@@ -294,15 +285,15 @@ def fancy_layout(h=380):
         height=h,
         font=dict(family='Outfit, sans-serif', color='#F8FAFC', size=13),
         margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8')),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8')),
+        # automargin=True forces Plotly to recalculate spacing so text is NEVER cut off
+        xaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8'), automargin=True),
+        yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8'), automargin=True),
         hoverlabel=dict(bgcolor='rgba(15, 23, 42, 0.9)', bordercolor='#00F0FF', font=dict(family='JetBrains Mono')),
         legend=dict(font=dict(color='#F8FAFC'), bgcolor='rgba(0,0,0,0)'),
-        dragmode=False, # PUNCH 2: Completely disables panning/zooming on mobile
+        dragmode=False, # Completely disables panning/zooming on mobile
     )
 
 COLORS = ['#00F0FF', '#FF2D7E', '#7C3AED', '#00FF9D', '#FFD740', '#FF6B35', '#38BDF8', '#F472B6']
-# PUNCH 2: Global Plotly config to hide the toolbar
 PLOTLY_CONFIG = {'displayModeBar': False}
 
 # ─── 4. DATA LOADER ────────────────────────────────────────────────────────────
@@ -451,7 +442,7 @@ if not sk_filt.empty:
                 fig3.add_trace(go.Scatter(x=d["week"], y=d["mention_count"], name=skill.title(), line=dict(color=c, width=3), mode='lines+markers'))
             L3 = fancy_layout(280); L3['legend'] = dict(orientation='h', y=1.2)
             fig3.update_layout(**L3)
-            L3['xaxis'] = dict(tickangle=-45, nticks=10, gridcolor='rgba(255,255,255,0.05)')
+            L3['xaxis'].update(tickangle=-45, nticks=10, automargin=True)
             L3['yaxis_title'] = "Weekly Mentions"
             st.plotly_chart(fig3, use_container_width=True, config=PLOTLY_CONFIG)
         with cb:
@@ -477,6 +468,7 @@ with col3:
             marker=dict(color=ct["job_count"], colorscale='Tealgrn'),
         ))
         L4 = fancy_layout(320); L4['title'] = "Job Volume by Hub"
+        L4['xaxis'].update(tickangle=-45, automargin=True)
         fig4.update_layout(**L4)
         st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -523,6 +515,7 @@ with col5:
         ))
         L6 = fancy_layout(450); L6['title'] = "Top 15 Hiring Companies"
         L6['xaxis_title'] = "Total Active Job Openings" 
+        L6['yaxis'].update(automargin=True)
         fig6.update_layout(**L6)
         st.plotly_chart(fig6, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -535,18 +528,14 @@ with col6:
         
         L8 = fancy_layout(450)
         L8['title'] = "Experience Distribution"
-        L8['xaxis'] = dict(
-            title="Minimum Years of Experience", 
-            dtick=1, 
-            gridcolor='rgba(255,255,255,0.05)',
-            showline=True, linewidth=1, linecolor='rgba(255,255,255,0.2)'
+        L8['xaxis'].update(
+            title="Minimum Years of Experience", dtick=1, 
+            showline=True, linewidth=1, linecolor='rgba(255,255,255,0.2)', automargin=True
         )
-        L8['yaxis'] = dict(
+        L8['yaxis'].update(
             title="Number of Roles Available", 
-            gridcolor='rgba(255,255,255,0.05)',
-            showline=True, linewidth=1, linecolor='rgba(255,255,255,0.2)'
+            showline=True, linewidth=1, linecolor='rgba(255,255,255,0.2)', automargin=True
         )
-        
         fig8.update_layout(**L8)
         st.plotly_chart(fig8, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -577,8 +566,8 @@ with col7:
             hovertemplate='<b>Role:</b> %{y}<br><b>Skill:</b> %{x}<br><b>Mentions:</b> %{z}<extra></extra>'
         ))
         L_hm = fancy_layout(450); L_hm['title'] = "Skill Dependency Matrix by Role"
-        L_hm['xaxis'] = dict(tickangle=-45, gridcolor='rgba(255,255,255,0)')
-        L_hm['yaxis'] = dict(gridcolor='rgba(255,255,255,0)')
+        L_hm['xaxis'].update(tickangle=-45, gridcolor='rgba(255,255,255,0)', automargin=True)
+        L_hm['yaxis'].update(gridcolor='rgba(255,255,255,0)', automargin=True)
         fig_hm.update_layout(**L_hm)
         st.plotly_chart(fig_hm, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -603,6 +592,7 @@ with col8:
         L_box = fancy_layout(450)
         L_box['title'] = "Realistic Salary Distribution (LPA)"
         L_box['yaxis_title'] = "Minimum Salary (LPA)"
+        L_box['xaxis'].update(tickangle=-45, automargin=True)
         L_box['showlegend'] = False 
         fig_box.update_layout(**L_box)
         st.plotly_chart(fig_box, use_container_width=True, config=PLOTLY_CONFIG)
