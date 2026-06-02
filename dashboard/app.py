@@ -193,70 +193,53 @@ button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; 
     -webkit-text-fill-color: transparent;
 }
 
-/* ─── ANIMATED CYBERPUNK SIDEBAR TOGGLE ─── */
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="collapsedControl"] {
-    display: flex !important;
-    position: fixed !important;
-    top: 25px !important; left: 25px !important;
-    width: 52px !important; height: 52px !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    background: #0F172A !important;
-    z-index: 999999 !important;
-    visibility: visible !important;
-}
-[data-testid="stSidebarCollapsedControl"]::before,
-[data-testid="collapsedControl"]::before {
-    content: '' !important;
-    position: absolute !important;
-    width: 200% !important; height: 200% !important;
-    top: -50% !important; left: -50% !important;
-    background: conic-gradient(transparent 0deg, transparent 240deg, rgba(0, 240, 255, 0.9) 240deg, #3B82F6 360deg) !important;
-    animation: border-trace 2s linear infinite !important;
-    z-index: 0 !important;
-}
-[data-testid="stSidebarCollapsedControl"] button,
-[data-testid="collapsedControl"] button {
-    position: absolute !important;
-    inset: 3px !important; z-index: 2 !important;
-    background: #0F172A !important;
-    border: none !important; border-radius: 9px !important;
-    display: flex !important; align-items: center !important; justify-content: center !important;
-}
-[data-testid="stSidebarCollapsedControl"] button svg,
-[data-testid="collapsedControl"] button svg {
-    fill: var(--cyan) !important; color: var(--cyan) !important;
-    width: 24px !important; height: 24px !important;
-}
-button[data-testid="stSidebarCollapseButton"] {
-    visibility: visible !important;
-    background: transparent !important; border: none !important;
-}
-button[data-testid="stSidebarCollapseButton"] svg {
-    fill: var(--cyan) !important; color: var(--cyan) !important;
-}
-@keyframes border-trace {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Force the arrow icon inside to be cyan and perfectly sized */
-[data-testid="collapsedControl"] svg,
-button[data-testid="stSidebarCollapseButton"] svg {
-    color: var(--cyan) !important;
-    fill: var(--cyan) !important;
-    width: 26px !important;
-    height: 26px !important;
-    margin: auto !important;
-    display: block !important;
-}
-
-/* Strip out Streamlit's default button background */
-[data-testid="collapsedControl"] button {
+/* ─── BULLETPROOF TOGGLE & MOBILE RESPONSIVENESS ─── */
+header[data-testid="stHeader"] {
     background: transparent !important;
-    border: none !important;
+    z-index: 999999 !important;
+    pointer-events: none !important; /* Prevents invisible header from blocking clicks */
 }
+header[data-testid="stHeader"] button {
+    pointer-events: auto !important; /* Keeps button clickable */
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 2px solid #00F0FF !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+    margin: 15px !important;
+    visibility: visible !important;
+}
+header[data-testid="stHeader"] button svg {
+    fill: #00F0FF !important;
+    color: #00F0FF !important;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 768px) {
+    .block-container { padding: 1rem !important; }
+    .title-glow { font-size: 1.6rem !important; }
+    .premium-header { padding: 15px !important; }
+    .kpi-value { font-size: 1.5rem !important; }
+    .glass-card { padding: 15px !important; margin-bottom: 10px !important; }
+    /* Force Streamlit columns to stack vertically on small screens */
+    div[data-testid="column"] { min-width: 100% !important; } 
+}
+
+# /* Force the arrow icon inside to be cyan and perfectly sized */
+# [data-testid="collapsedControl"] svg,
+# button[data-testid="stSidebarCollapseButton"] svg {
+#     color: var(--cyan) !important;
+#     fill: var(--cyan) !important;
+#     width: 26px !important;
+#     height: 26px !important;
+#     margin: auto !important;
+#     display: block !important;
+# }
+
+# /* Strip out Streamlit's default button background */
+# [data-testid="collapsedControl"] button {
+#     background: transparent !important;
+#     border: none !important;
+# }
                    
 /* ─── ANIMATED SIDEBAR TOGGLE (ALIGNED) ─── */
 # [data-testid="collapsedControl"] {
