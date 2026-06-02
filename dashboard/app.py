@@ -44,51 +44,46 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE CLUTTER & DESTROY GITHUB LINK ─── */
+/* ─── 1. SAFE HEADER (NO POINTER-EVENTS HACKS) ─── */
 [data-testid="stHeader"] {
     background: transparent !important;
-    box-shadow: none !important;
-    pointer-events: none !important; /* Click through the invisible header */
+    background-color: transparent !important;
 }
 
-/* Specifically hide the Toolbar, Deploy Button, and the View Source/GitHub link */
+/* Specifically hide only the right-side clutter, leave the rest of the header intact */
 [data-testid="stToolbar"], 
-[data-testid="stDecoration"], 
-[title="View source"],
-[data-testid="stHeader"] a,
+.viewerBadge_container, 
 #MainMenu, 
 footer {
     display: none !important;
-    pointer-events: none !important;
 }
 
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 2. CLEAN CYBERPUNK MENU BUTTON (NO GLOW) ─── */
-/* Exclusively target the actual sidebar control */
+/* ─── 2. STYLING THE NATIVE BUTTON (IN-PLACE) ─── */
+/* We let Streamlit keep the button in its natural DOM flow, just dressing it up */
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"] {
-    pointer-events: auto !important; /* Make it clickable again */
-    display: flex !important;
-    visibility: visible !important;
-    position: fixed !important;
-    top: 20px !important;
-    left: 20px !important;
-    width: 48px !important;
-    height: 48px !important;
-    border-radius: 10px !important;
-    background: #0F172A !important;
-    border: 1.5px solid #00F0FF !important; /* Clean, solid cyan border */
-    z-index: 999999 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: background 0.3s ease !important;
-    /* ALL GLOW AND ANIMATIONS REMOVED */
+    background-color: #0F172A !important;
+    border: 1px solid #00F0FF !important;
+    border-radius: 8px !important;
+    margin-top: 15px !important;
+    margin-left: 15px !important;
+    transition: all 0.3s ease !important;
 }
 
+/* Ensure the icon is Cyan */
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {
+    fill: #00F0FF !important;
+    color: #00F0FF !important;
+}
+
+/* Simple hover effect */
 [data-testid="collapsedControl"]:hover,
 [data-testid="stSidebarCollapsedControl"]:hover {
-    background: #1E293B !important; /* Slight lighten on hover */
+    background-color: #1E293B !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4) !important;
 }
 
 /* Ensure the inner button takes up the full space and is clickable */
