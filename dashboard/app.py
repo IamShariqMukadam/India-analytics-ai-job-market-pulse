@@ -44,94 +44,84 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE HEADER & CLUTTER ─── */
+/* ─── 1. HIDE CLUTTER (FIXED HEADER POINTER EVENTS) ─── */
 header[data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    pointer-events: none !important;
+    /* REMOVED pointer-events: none !important; to keep the button clickable */
 }
 [data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 2. ISOLATE THE CYBERPUNK BUTTON ─── */
+/* ─── 2. ISOLATE & ANIMATE THE CYBERPUNK BUTTON ─── */
 [data-testid="collapsedControl"], 
 [data-testid="stSidebarCollapsedControl"] {
-    pointer-events: auto !important;
-    display: flex !important;
     position: fixed !important;
     top: 20px !important;
     left: 20px !important;
-    width: 48px !important;
-    height: 48px !important;
-    background: rgba(15, 23, 42, 0.95) !important;
-    border: 2px solid #00F0FF !important;
+    width: 52px !important;
+    height: 52px !important;
     border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #0F172A !important;
     z-index: 999999 !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
 }
+
+/* The Animated Glowing Border */
+[data-testid="collapsedControl"]::before,
+[data-testid="stSidebarCollapsedControl"]::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 200% !important; height: 200% !important;
+    top: -50% !important; left: -50% !important;
+    background: conic-gradient(
+        transparent 0deg,
+        transparent 240deg,
+        rgba(0, 240, 255, 0.9) 240deg,
+        #3B82F6 360deg
+    ) !important;
+    animation: border-trace 2s linear infinite !important;
+    z-index: 0 !important;
+}
+
+/* The Inner Dark Button */
 [data-testid="collapsedControl"] button,
 [data-testid="stSidebarCollapsedControl"] button {
-    background: transparent !important;
+    position: absolute !important;
+    inset: 3px !important; /* Creates the border width for the animation */
+    z-index: 2 !important;
+    background: #0F172A !important;
     border: none !important;
-    width: 100% !important;
-    height: 100% !important;
+    border-radius: 9px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: calc(100% - 6px) !important;
+    height: calc(100% - 6px) !important;
+    transition: background 0.3s ease !important;
 }
+
+[data-testid="collapsedControl"] button:hover,
+[data-testid="stSidebarCollapsedControl"] button:hover {
+    background: #1E293B !important; /* Slight lighten on hover */
+}
+
+/* The SVG Icon */
 [data-testid="collapsedControl"] svg,
 [data-testid="stSidebarCollapsedControl"] svg {
-    fill: #00F0FF !important;
-    color: #00F0FF !important;
+    fill: var(--cyan) !important;
+    color: var(--cyan) !important;
     width: 24px !important;
     height: 24px !important;
 }
 
-/* ─── 3. FANCY HEADER ─── */
-.premium-header {
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-glow);
-    border-radius: 16px;
-    padding: 30px;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-.title-glow {
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-}
-.title-glow span {
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.live-pulse {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid var(--cyan);
-    color: var(--cyan);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-top: 15px;
-    letter-spacing: 2px;
-}
-.pulse-dot {
-    width: 8px; height: 8px; background-color: var(--cyan); border-radius: 50%; animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+@keyframes border-trace {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* ─── 4. GLASSMORPHISM CARDS ─── */
@@ -185,14 +175,45 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
-/* ─── MOBILE RESPONSIVENESS ─── */
+/* ─── MOBILE RESPONSIVENESS (ENHANCED) ─── */
 @media (max-width: 768px) {
-    .block-container { padding: 1rem !important; margin-top: 50px !important; }
-    .title-glow { font-size: 1.6rem !important; }
-    .premium-header { padding: 15px !important; margin-bottom: 15px !important; }
-    .kpi-value { font-size: 1.5rem !important; }
-    .glass-card { padding: 15px !important; margin-bottom: 10px !important; }
-    div[data-testid="column"] { min-width: 100% !important; } 
+    .block-container { 
+        padding: 1rem !important; 
+        margin-top: 70px !important; /* Pushes content below the fixed menu button */
+    }
+    
+    .premium-header { 
+        padding: 20px 10px !important; 
+        margin-bottom: 20px !important; 
+    }
+    
+    .title-glow { font-size: 1.5rem !important; line-height: 1.3 !important; }
+    
+    .kpi-value { font-size: 1.6rem !important; }
+    
+    /* Give cards breathing room when stacked */
+    .glass-card, .plat-card { 
+        padding: 15px !important; 
+        margin-bottom: 15px !important; 
+    }
+    
+    /* Force absolute stacking of Streamlit columns */
+    [data-testid="column"] { 
+        width: 100% !important; 
+        flex: 1 1 100% !important; 
+        min-width: 100% !important;
+    }
+    
+    /* Scale down oversized custom text elements for mobile */
+    .glass-card div[style*="font-size:3rem"] { 
+        font-size: 2.2rem !important; 
+    }
+    
+    /* Fix horizontal scrolling issues with Plotly/Tables */
+    [data-testid="stDataFrame"], .stPlotlyChart { 
+        width: 100% !important; 
+        overflow-x: auto !important; 
+    }
 }
 </style>
 """, unsafe_allow_html=True)
