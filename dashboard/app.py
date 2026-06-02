@@ -155,41 +155,36 @@ header { background: transparent !important; }
             
 /* ─── ANIMATED SIDEBAR TOGGLE ─── */
 /* stToolbar is display:none so the only button left in header IS the toggle */
-header button,
+/* ─── ANIMATED SIDEBAR TOGGLE ─── */
 [data-testid="collapsedControl"] button,
-[data-testid="stSidebarCollapsedControl"] button {
+[data-testid="stSidebarCollapsedControl"] button,
+header button {
     position: relative !important;
-    width: 52px !important;
-    height: 52px !important;
+    width: 44px !important;
+    height: 44px !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     background: #0F172A !important;
-    margin-top: 32px !important;
-    margin-left: 5px !important;
 }
-header button::before,
-[data-testid="collapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"]::before {
+[data-testid="collapsedControl"] button::before,
+[data-testid="stSidebarCollapsedControl"] button::before,
+header button::before {
     content: '' !important;
     position: absolute !important;
     width: 200% !important; height: 200% !important;
     top: -50% !important; left: -50% !important;
     background: conic-gradient(
-        transparent 0deg,
-        transparent 240deg,
-        rgba(0, 240, 255, 0.9) 240deg,
-        #3B82F6 360deg
+        transparent 0deg, transparent 240deg,
+        rgba(0,240,255,0.9) 240deg, #3B82F6 360deg
     ) !important;
     animation: border-trace 2s linear infinite !important;
     z-index: 0 !important;
 }
-header button svg,
 [data-testid="collapsedControl"] button svg,
-[data-testid="stSidebarCollapsedControl"] button svg {
+[data-testid="stSidebarCollapsedControl"] button svg,
+header button svg {
     fill: var(--cyan) !important;
     color: var(--cyan) !important;
-    width: 24px !important;
-    height: 24px !important;
     position: relative !important;
     z-index: 2 !important;
 }
