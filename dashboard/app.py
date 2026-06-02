@@ -47,12 +47,25 @@ html, body, [class*="css"], .stApp {
 /* Hide Streamlit Clutter */
 #MainMenu, footer { visibility: hidden; }
 header { visibility: hidden; }
-header [data-testid="stSidebarCollapsedControl"],
-button[data-testid="collapsedControl"],
-[data-testid="collapsedControl"] {
+
+/* ── SIDEBAR TOGGLE FIX (covers all Streamlit Cloud DOM variants) ──
+   Cloud & localhost can render the toggle in different elements.
+   We force-show every known selector so it's always clickable.       */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarNavCollapseButton"],
+header button,
+header > div button,
+header > div > div button,
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
+section[data-testid="stSidebar"] > div:first-child button,
+button[aria-label="Close sidebar"],
+button[aria-label="Open sidebar"] {
     visibility: visible !important;
     display: flex !important;
     opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 99999 !important;
 }
 .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
@@ -158,17 +171,24 @@ button[data-testid="collapsedControl"],
 
             
 /* ─── ANIMATED SIDEBAR TOGGLE (ALIGNED) ─── */
-[data-testid="collapsedControl"] {
+/* Both selectors: localhost uses collapsedControl, Cloud may use stSidebarCollapsedControl */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
     position: relative !important;
     width: 52px !important;
     height: 52px !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     background: #0F172A !important;
-    margin-top: 32px !important; /* Pushed down exactly to title height */
+    margin-top: 32px !important;
     margin-left: 5px !important;
+    visibility: visible !important;
+    display: flex !important;
+    opacity: 1 !important;
+    z-index: 99999 !important;
 }
-[data-testid="collapsedControl"]::before {
+[data-testid="collapsedControl"]::before,
+[data-testid="stSidebarCollapsedControl"]::before {
     content: '' !important;
     position: absolute !important;
     width: 200% !important; height: 200% !important;
@@ -182,7 +202,8 @@ button[data-testid="collapsedControl"],
     animation: border-trace 2s linear infinite !important;
     z-index: 0 !important;
 }
-[data-testid="collapsedControl"] button {
+[data-testid="collapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] button {
     position: absolute !important;
     inset: 3px !important;
     z-index: 2 !important;
@@ -192,8 +213,12 @@ button[data-testid="collapsedControl"],
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }
-[data-testid="collapsedControl"] button svg {
+[data-testid="collapsedControl"] button svg,
+[data-testid="stSidebarCollapsedControl"] button svg {
     fill: var(--cyan) !important;
     color: var(--cyan) !important;
     width: 24px !important;
