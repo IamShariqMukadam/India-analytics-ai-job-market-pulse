@@ -242,6 +242,17 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
         padding: 16px !important;
     }
 }
+/* ─── KILL RED STREAMLIT BADGE, KEEP GITHUB ─── */
+a[href*="streamlit.io/cloud"],
+a[href*="share.streamlit.io"],
+a[href*="streamlit.io"] img[alt*="Streamlit"],
+.viewerBadge_link[href*="streamlit.io"],
+footer a[href*="streamlit.io"],
+#badges a[href*="streamlit.io"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -340,6 +351,44 @@ components.html("""
     };
 
     doc.body.appendChild(btn);
+})();
+</script>
+""", height=0, width=0)
+
+components.html("""
+<script>
+(function killStreamlitBadge() {
+    function nuke() {
+        const doc = window.parent.document;
+        // Target all anchors linking to streamlit.io
+        doc.querySelectorAll('a[href*="streamlit.io"]').forEach(el => {
+            // But preserve any GitHub-related siblings
+            if (!el.href.includes('github')) {
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+                // Also hide the parent li/div if it becomes empty
+                const parent = el.parentElement;
+                if (parent && parent.children.length === 1) {
+                    parent.style.display = 'none';
+                }
+            }
+        });
+        // Also nuke any iframe injected by Streamlit Cloud for the badge
+        doc.querySelectorAll('iframe').forEach(iframe => {
+            try {
+                if (iframe.src && iframe.src.includes('streamlit.io')) {
+                    iframe.style.display = 'none';
+                }
+            } catch(e) {}
+        });
+    }
+    // Run immediately + after DOM settles
+    nuke();
+    setTimeout(nuke, 500);
+    setTimeout(nuke, 2000);
+    // Watch for dynamic injection
+    const obs = new MutationObserver(nuke);
+    obs.observe(window.parent.document.body, { childList: true, subtree: true });
 })();
 </script>
 """, height=0, width=0)
