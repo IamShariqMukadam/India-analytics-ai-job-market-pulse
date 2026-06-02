@@ -44,95 +44,73 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. HIDE CLUTTER & FORCE VISIBILITY ─── */
+/* ─── 1. HIDE CLUTTER & DESTROY GITHUB LINK ─── */
 [data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    pointer-events: none !important; /* Let clicks pass through the invisible header */
-    z-index: 999990 !important;
+    pointer-events: none !important; /* Click through the invisible header */
 }
 
-/* Force ALL wrapper divs in the header to be visible in case Streamlit strips their names */
-[data-testid="stHeader"] > div {
-    display: block !important;
-    visibility: visible !important;
-}
-
-/* Specifically assassinate the Toolbar, Deploy Button, and injected GitHub Links */
+/* Specifically hide the Toolbar, Deploy Button, and the View Source/GitHub link */
 [data-testid="stToolbar"], 
 [data-testid="stDecoration"], 
-[data-testid="stStatusWidget"], 
+[title="View source"],
+[data-testid="stHeader"] a,
 #MainMenu, 
-footer,
-[data-testid="stHeader"] a {
+footer {
     display: none !important;
+    pointer-events: none !important;
 }
 
-/* ─── 2. THE BULLETPROOF CYBERPUNK BUTTON ─── */
-/* Target the literal HTML button inside the header. This ignores all Streamlit naming conventions. */
-[data-testid="stHeader"] button {
-    pointer-events: auto !important; /* Re-enable clicking for this button only */
+.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
+
+/* ─── 2. CLEAN CYBERPUNK MENU BUTTON (NO GLOW) ─── */
+/* Exclusively target the actual sidebar control */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
+    pointer-events: auto !important; /* Make it clickable again */
     display: flex !important;
+    visibility: visible !important;
     position: fixed !important;
     top: 20px !important;
     left: 20px !important;
-    width: 52px !important;
-    height: 52px !important;
-    border-radius: 12px !important;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 10px !important;
     background: #0F172A !important;
+    border: 1.5px solid #00F0FF !important; /* Clean, solid cyan border */
     z-index: 999999 !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 2px solid #00F0FF !important; /* Permanent fallback border */
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
-    overflow: hidden !important;
-    color: transparent !important; /* Hides default Streamlit text if any */
-    outline: none !important;
-}
-
-/* The Animated Rotating Background Layer */
-[data-testid="stHeader"] button::before {
-    content: '' !important;
-    position: absolute !important;
-    width: 250% !important; height: 250% !important;
-    top: -75% !important; left: -75% !important;
-    background: conic-gradient(
-        transparent 0deg,
-        transparent 240deg,
-        rgba(0, 240, 255, 0.9) 240deg,
-        #3B82F6 360deg
-    ) !important;
-    animation: border-trace 2s linear infinite !important;
-    z-index: 0 !important;
-}
-
-/* The Inner Dark Cutout Layer */
-[data-testid="stHeader"] button::after {
-    content: '' !important;
-    position: absolute !important;
-    inset: 3px !important; /* This creates the 3px border width for the animation */
-    z-index: 1 !important;
-    background: #0F172A !important;
-    border-radius: 9px !important;
     transition: background 0.3s ease !important;
+    /* ALL GLOW AND ANIMATIONS REMOVED */
 }
 
-[data-testid="stHeader"] button:hover::after {
-    background: #1E293B !important;
+[data-testid="collapsedControl"]:hover,
+[data-testid="stSidebarCollapsedControl"]:hover {
+    background: #1E293B !important; /* Slight lighten on hover */
 }
 
-[data-testid="stHeader"] button:focus {
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.8) !important;
+/* Ensure the inner button takes up the full space and is clickable */
+[data-testid="collapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] button {
+    pointer-events: auto !important;
+    background: transparent !important;
+    border: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-/* Elevate and Color the actual SVG Icon */
-[data-testid="stHeader"] button svg {
+/* The SVG Icon */
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {
     fill: #00F0FF !important;
     color: #00F0FF !important;
     width: 24px !important;
     height: 24px !important;
-    z-index: 2 !important;
-    position: relative !important;
 }
 
 @keyframes border-trace {
