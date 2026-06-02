@@ -21,27 +21,6 @@ st.set_page_config(
 # ─── 2. PREMIUM DARK GLASSMORPHISM CSS ─────────────────────────────────────────
 st.markdown("""
 <style>
-# /* Force the new Streamlit sidebar collapse button to be visible and glowing cyan */
-# [data-testid="stSidebarCollapseButton"] {
-#     background-color: rgba(15, 23, 42, 0.8) !important;
-#     border: 1px solid rgba(0, 240, 255, 0.3) !important;
-#     border-radius: 8px !important;
-#     color: #00F0FF !important;
-#     display: flex !important;
-#     z-index: 999999 !important;
-# }
-
-# /* Ensure the hover state looks good */
-# [data-testid="stSidebarCollapseButton"]:hover {
-#     background-color: rgba(0, 240, 255, 0.1) !important;
-#     border-color: #00F0FF !important;
-# }
-
-# /* Fix any modern slider container track visibility issues in dark mode */
-# .stSlider [data-baseweb="slider"] {
-#     background-color: rgba(255, 255, 255, 0.1) !important;
-# }
-            
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
@@ -65,349 +44,163 @@ html, body, [class*="css"], .stApp {
     color: var(--text-primary) !important;
 }
 
-/* ─── 1. NUKE THE UGLY HEADER BUT KEEP IT TRANSPARENT ─── */
+/* ─── 1. NUKE HEADER & CLUTTER ─── */
 header[data-testid="stHeader"] {
     background: transparent !important;
     box-shadow: none !important;
-    pointer-events: none !important; /* Lets you click through the invisible header */
+    pointer-events: none !important; /* Click through invisible header */
 }
-
-/* ─── 2. HIDE THE SHARE/DEPLOY MENU COMPLETELY ─── */
 [data-testid="stToolbar"], #MainMenu, footer { 
     display: none !important; 
 }
+.block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
 
-/* ─── 3. THE FLOATING CYBERPUNK BUTTON ─── */
+/* ─── 2. ISOLATED CYBERPUNK BUTTON ─── */
 [data-testid="collapsedControl"], 
 [data-testid="stSidebarCollapsedControl"] {
-    pointer-events: auto !important; /* Re-enables clicking for just the button */
+    pointer-events: auto !important;
     display: flex !important;
     position: fixed !important;
     top: 20px !important;
     left: 20px !important;
     width: 48px !important;
     height: 48px !important;
-    background: #0F172A !important;
-    border: 2px solid #00F0FF !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 2px solid var(--cyan) !important;
     border-radius: 12px !important;
     z-index: 999999 !important;
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
     align-items: center !important;
     justify-content: center !important;
+    transition: all 0.3s ease;
 }
-
-[data-testid="collapsedControl"] svg {
-    fill: #00F0FF !important;
-    color: #00F0FF !important;
+[data-testid="collapsedControl"]:hover,
+[data-testid="stSidebarCollapsedControl"]:hover {
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.8) !important;
+    transform: scale(1.05);
+}
+[data-testid="collapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] button {
+    background: transparent !important;
+    border: none !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {
+    fill: var(--cyan) !important;
+    color: var(--cyan) !important;
     width: 24px !important;
     height: 24px !important;
 }
 
-/* ─── 4. MOBILE RESPONSIVENESS ─── */
+/* ─── 3. FANCY HEADER ─── */
+.premium-header {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-glow);
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+.title-glow {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+}
+.title-glow span {
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.live-pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 15px;
+    letter-spacing: 2px;
+}
+.pulse-dot {
+    width: 8px; height: 8px; background-color: var(--cyan); border-radius: 50%; animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+}
+
+/* ─── 4. GLASSMORPHISM CARDS ─── */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 3px solid var(--cyan) !important;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+}
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--border-glow);
+    box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.15);
+}
+.kpi-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
+.kpi-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+.kpi-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; font-weight: 600; }
+
+/* ─── 5. SECTION HEADERS ─── */
+.fancy-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 40px 0 20px 0; }
+.section-title { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+.section-title span { background: linear-gradient(90deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* ─── 6. TABLE & WIDGETS ─── */
+section[data-testid="stSidebar"] { background: rgba(15, 23, 42, 0.95) !important; border-right: 1px solid var(--border-glow) !important; backdrop-filter: blur(20px); display: flex !important; visibility: visible !important; }
+div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; border-color: rgba(0, 240, 255, 0.2) !important; }
+.stMultiSelect [data-baseweb="tag"] { background: rgba(0, 240, 255, 0.1) !important; border: 1px solid var(--cyan) !important; color: var(--text-primary) !important; }
+
+[data-testid="stDataFrame"] { border: 1px solid var(--border-glow) !important; border-radius: 12px !important; overflow: hidden !important; background: #06093A !important; }
+[data-testid="stDataFrame"] [role="columnheader"] { background: #0A0E45 !important; color: var(--cyan) !important; font-weight: 600 !important; border-bottom: 1px solid var(--border-glow) !important; }
+[data-testid="stDataFrame"] [role="gridcell"] { background: #06093A !important; color: var(--text-primary) !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] { background: rgba(0, 240, 255, 0.08) !important; }
+[data-testid="stDataFrame"] progress { accent-color: var(--cyan) !important; }
+
+.plat-card { background: var(--card-bg); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; text-align: center; }
+
+[data-testid="stTextInput"] div[data-baseweb="input"] { background-color: rgba(15, 23, 42, 0.6) !important; border: 1px solid var(--cyan) !important; border-radius: 8px !important; transition: all 0.3s ease; }
+[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
+[data-testid="stTextInput"] input { color: var(--text-primary) !important; }
+
+/* ─── 7. MOBILE RESPONSIVENESS ─── */
 @media (max-width: 768px) {
     .block-container { padding: 1rem !important; margin-top: 50px !important; }
     .title-glow { font-size: 1.6rem !important; }
     .premium-header { padding: 15px !important; margin-bottom: 15px !important; }
     .kpi-value { font-size: 1.5rem !important; }
     .glass-card { padding: 15px !important; margin-bottom: 10px !important; }
-}
-            
-# /* Hide Streamlit Clutter */
-# #MainMenu, footer { visibility: hidden; }
-# header { background: transparent !important; }
-# [data-testid="stToolbar"] { visibility: hidden !important; }
-# [data-testid="stSidebarCollapsedControl"] button,
-# [data-testid="collapsedControl"] button,
-# button[kind="headerNoPadding"] {
-#     background: rgba(15, 23, 42, 0.9) !important;
-#     border: 2px solid var(--cyan) !important;
-#     border-radius: 12px !important;
-#     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
-#     color: var(--cyan) !important;
-#     width: 44px !important;
-#     height: 44px !important;
-# }
-# [data-testid="stSidebarCollapsedControl"] button svg,
-# [data-testid="collapsedControl"] button svg {
-#     fill: var(--cyan) !important;
-#     color: var(--cyan) !important;
-# }
-# [data-testid="collapsedControl"],
-# button[data-testid="stSidebarCollapseButton"] { visibility: visible !important; }
-# .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; }
-# [data-testid="stSidebar"] {
-#     display: flex !important;
-#     visibility: visible !important;
-# }
-            
-# /* ─── FANCY HEADER ─── */
-# .premium-header {
-#     background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.2) 100%);
-#     backdrop-filter: blur(12px);
-#     -webkit-backdrop-filter: blur(12px);
-#     border-bottom: 1px solid var(--border-glow);
-#     border-radius: 16px;
-#     padding: 30px;
-#     text-align: center;
-#     margin-bottom: 30px;
-#     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-# }
-# .title-glow {
-#     font-size: 2.2rem;
-#     font-weight: 800;
-#     background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
-#     -webkit-background-clip: text;
-#     -webkit-text-fill-color: transparent;
-#     letter-spacing: 1px;
-# }
-# .title-glow span {
-#     background: linear-gradient(90deg, var(--cyan), var(--magenta));
-#     -webkit-background-clip: text;
-#     -webkit-text-fill-color: transparent;
-# }
-# .live-pulse {
-#     display: inline-flex;
-#     align-items: center;
-#     gap: 8px;
-#     background: rgba(0, 240, 255, 0.1);
-#     border: 1px solid var(--cyan);
-#     color: var(--cyan);
-#     padding: 4px 12px;
-#     border-radius: 20px;
-#     font-size: 0.8rem;
-#     font-weight: 600;
-#     margin-top: 15px;
-#     letter-spacing: 2px;
-# }
-# .pulse-dot {
-#     width: 8px;
-#     height: 8px;
-#     background-color: var(--cyan);
-#     border-radius: 50%;
-#     animation: pulse 1.5s infinite;
-# }
-# @keyframes pulse {
-#     0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
-#     70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
-#     100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
-# }
-
-# /* ─── GLASSMORPHISM METRIC CARDS (WITH TOP BORDER) ─── */
-# .glass-card {
-#     background: var(--card-bg);
-#     backdrop-filter: blur(16px);
-#     -webkit-backdrop-filter: blur(16px);
-#     border: 1px solid rgba(255, 255, 255, 0.05);
-#     border-top: 3px solid var(--cyan) !important; /* Added thick top border */
-#     border-radius: 16px;
-#     padding: 24px;
-#     text-align: center;
-#     transition: all 0.3s ease;
-#     box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
-# }
-# .glass-card:hover {
-#     transform: translateY(-5px);
-#     border-color: var(--border-glow);
-#     box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.15);
-# }
-# .kpi-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
-# .kpi-value {
-#     font-family: 'JetBrains Mono', monospace;
-#     font-size: 2rem;
-#     font-weight: 700;
-#     color: var(--text-primary);
-#     line-height: 1.1;
-#     text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-# }
-# .kpi-label {
-#     font-size: 0.8rem;
-#     color: var(--text-muted);
-#     text-transform: uppercase;
-#     letter-spacing: 1px;
-#     margin-top: 8px;
-#     font-weight: 600;
-# }
-
-# /* ─── SECTION HEADERS (GRADIENT TEXT) ─── */
-# .fancy-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 40px 0 20px 0; }
-# .section-title { 
-#     display: flex; align-items: center; gap: 12px; font-size: 1.25rem; 
-#     font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; 
-# }
-# .section-title span {
-#     background: linear-gradient(90deg, var(--cyan), var(--magenta));
-#     -webkit-background-clip: text;
-#     -webkit-text-fill-color: transparent;
-# }
-
-# /* ─── BULLETPROOF TOGGLE & MOBILE RESPONSIVENESS ─── */
-# header[data-testid="stHeader"] {
-#     background: transparent !important;
-#     z-index: 999999 !important;
-#     pointer-events: none !important; /* Prevents invisible header from blocking clicks */
-# }
-# header[data-testid="stHeader"] button {
-#     pointer-events: auto !important; /* Keeps button clickable */
-#     background: rgba(15, 23, 42, 0.95) !important;
-#     border: 2px solid #00F0FF !important;
-#     border-radius: 10px !important;
-#     box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
-#     margin: 15px !important;
-#     visibility: visible !important;
-# }
-# header[data-testid="stHeader"] button svg {
-#     fill: #00F0FF !important;
-#     color: #00F0FF !important;
-# }
-
-# /* MOBILE RESPONSIVENESS */
-# @media (max-width: 768px) {
-#     .block-container { padding: 1rem !important; }
-#     .title-glow { font-size: 1.6rem !important; }
-#     .premium-header { padding: 15px !important; }
-#     .kpi-value { font-size: 1.5rem !important; }
-#     .glass-card { padding: 15px !important; margin-bottom: 10px !important; }
-#     /* Force Streamlit columns to stack vertically on small screens */
-#     div[data-testid="column"] { min-width: 100% !important; } 
-# }
-
-# /* Force the arrow icon inside to be cyan and perfectly sized */
-# [data-testid="collapsedControl"] svg,
-# button[data-testid="stSidebarCollapseButton"] svg {
-#     color: var(--cyan) !important;
-#     fill: var(--cyan) !important;
-#     width: 26px !important;
-#     height: 26px !important;
-#     margin: auto !important;
-#     display: block !important;
-# }
-
-# /* Strip out Streamlit's default button background */
-# [data-testid="collapsedControl"] button {
-#     background: transparent !important;
-#     border: none !important;
-# }
-                   
-/* ─── ANIMATED SIDEBAR TOGGLE (ALIGNED) ─── */
-# [data-testid="collapsedControl"] {
-#     position: relative !important;
-#     width: 52px !important;
-#     height: 52px !important;
-#     border-radius: 12px !important;
-#     overflow: hidden !important;
-#     background: #0F172A !important;
-#     margin-top: 32px !important; /* Pushed down exactly to title height */
-#     margin-left: 5px !important;
-# }
-# [data-testid="collapsedControl"]::before {
-#     content: '' !important;
-#     position: absolute !important;
-#     width: 200% !important; height: 200% !important;
-#     top: -50% !important; left: -50% !important;
-#     background: conic-gradient(
-#         transparent 0deg,
-#         transparent 240deg,
-#         rgba(0, 240, 255, 0.9) 240deg,
-#         #3B82F6 360deg
-#     ) !important;
-#     animation: border-trace 2s linear infinite !important;
-#     z-index: 0 !important;
-# }
-# [data-testid="collapsedControl"] button {
-#     position: absolute !important;
-#     inset: 3px !important;
-#     z-index: 2 !important;
-#     background: #0F172A !important;
-#     border: none !important;
-#     border-radius: 9px !important;
-#     display: flex !important;
-#     align-items: center !important;
-#     justify-content: center !important;
-# }
-# [data-testid="collapsedControl"] button svg {
-#     fill: var(--cyan) !important;
-#     color: var(--cyan) !important;
-#     width: 24px !important;
-#     height: 24px !important;
-# }
-# @keyframes border-trace {
-#     0%   { transform: rotate(0deg); }
-#     100% { transform: rotate(360deg); }
-# }
-
-/* ─── FIXED TABLE OVERRIDES (VISIBLE TEXT & NAVY THEME) ─── */
-[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div {
-    background-color: #06093A !important;
-}
-[data-testid="stDataFrame"] [role="columnheader"] {
-    background-color: #0A0E45 !important;
-    color: var(--cyan) !important;
-    border-bottom: 2px solid var(--border-glow) !important;
-}
-[data-testid="stDataFrame"] [role="gridcell"] {
-    background-color: #06093A !important;
-    color: var(--text-primary) !important;
-    border-bottom: 1px solid rgba(0, 240, 255, 0.1) !important;
-}
-[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] {
-    background-color: rgba(0, 240, 255, 0.08) !important;
-}
-            
-                  
-/* ─── WIDGET & TABLE OVERRIDES (CYAN/SLATE THEME) ─── */
-section[data-testid="stSidebar"] {
-    background: rgba(15, 23, 42, 0.95) !important;
-    border-right: 1px solid var(--border-glow) !important;
-    backdrop-filter: blur(20px);
-}
-div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; border-color: rgba(0, 240, 255, 0.2) !important; }
-.stMultiSelect [data-baseweb="tag"] { background: rgba(0, 240, 255, 0.1) !important; border: 1px solid var(--cyan) !important; color: var(--text-primary) !important; }
-
-/* ─── DATAFRAME / TABLE RE-STYLING (DEEP NAVY, NO PURPLE) ─── */
-[data-testid="stDataFrame"] { 
-    border: 1px solid var(--border-glow) !important; 
-    border-radius: 12px !important; 
-    overflow: hidden !important; 
-    background: #06093A !important; 
-}
-[data-testid="stDataFrame"] [role="columnheader"] { 
-    background: #0A0E45 !important; 
-    color: var(--cyan) !important; 
-    font-weight: 600 !important;
-    border-bottom: 1px solid var(--border-glow) !important;
-}
-[data-testid="stDataFrame"] [role="gridcell"] { 
-    background: #06093A !important; 
-    color: var(--text-primary) !important; 
-    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
-}
-[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] { 
-    background: rgba(0, 240, 255, 0.08) !important; 
-}
-[data-testid="stDataFrame"] progress { accent-color: var(--cyan) !important; }
-
-/* PLATFORM CARDS */
-.plat-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
-    padding: 20px; text-align: center;
-}
-
-/* ─── CUSTOM SEARCH BAR ─── */
-[data-testid="stTextInput"] div[data-baseweb="input"] {
-    background-color: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid var(--cyan) !important; /* Normal Blue/Cyan border */
-    border-radius: 8px !important;
-    transition: all 0.3s ease;
-}
-/* Purple/Magenta glow when selected */
-[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within {
-    border: 1px solid var(--magenta) !important; 
-    box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important;
-}
-[data-testid="stTextInput"] input {
-    color: var(--text-primary) !important;
+    div[data-testid="column"] { min-width: 100% !important; } 
 }
 </style>
 """, unsafe_allow_html=True)
