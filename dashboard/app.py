@@ -153,11 +153,11 @@ header { background: transparent !important; }
 }
 
             
-/* ─── ANIMATED SIDEBAR TOGGLE ─── */
-/* stToolbar is display:none so the only button left in header IS the toggle */
-/* ─── ANIMATED SIDEBAR TOGGLE ─── */
+/* ─── ANIMATED SIDEBAR TOGGLE — UNIVERSAL FIX ─── */
 [data-testid="collapsedControl"] button,
 [data-testid="stSidebarCollapsedControl"] button,
+[data-testid="stSidebarCollapseButton"],
+button[kind="header"],
 header button {
     position: relative !important;
     width: 44px !important;
@@ -165,9 +165,13 @@ header button {
     border-radius: 12px !important;
     overflow: hidden !important;
     background: #0F172A !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
+/* Layer 0: spinning conic gradient (the border source) */
 [data-testid="collapsedControl"] button::before,
 [data-testid="stSidebarCollapsedControl"] button::before,
+button[kind="header"]::before,
 header button::before {
     content: '' !important;
     position: absolute !important;
@@ -180,13 +184,30 @@ header button::before {
     animation: border-trace 2s linear infinite !important;
     z-index: 0 !important;
 }
+/* Layer 1: inner cutout — THIS WAS THE MISSING PIECE */
+[data-testid="collapsedControl"] button::after,
+[data-testid="stSidebarCollapsedControl"] button::after,
+button[kind="header"]::after,
+header button::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 2px !important; left: 2px !important;
+    right: 2px !important; bottom: 2px !important;
+    background: #0F172A !important;
+    border-radius: 10px !important;
+    z-index: 1 !important;
+}
+/* Layer 2: SVG icon on top of everything */
 [data-testid="collapsedControl"] button svg,
 [data-testid="stSidebarCollapsedControl"] button svg,
+button[kind="header"] svg,
 header button svg {
     fill: var(--cyan) !important;
     color: var(--cyan) !important;
     position: relative !important;
-    z-index: 2 !important;
+    z-index: 3 !important;
+    width: 20px !important;
+    height: 20px !important;
 }
 @keyframes border-trace {
     0%   { transform: rotate(0deg); }
