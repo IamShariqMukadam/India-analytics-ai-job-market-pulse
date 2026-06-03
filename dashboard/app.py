@@ -145,19 +145,6 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
 
-/* ─── ULTIMATE FULL PAGE SCREENSHOT FIX & CLEAN SCROLLBARS ─── */
-/* Unwraps every single Streamlit nesting doll so the browser can capture the full length */
-html, body, #root, .stApp, 
-[data-testid="stAppViewContainer"], 
-[data-testid="stMain"], 
-[data-testid="stMainBlockContainer"] {
-    height: auto !important;
-    min-height: 100vh !important;
-    max-height: none !important;
-    overflow: visible !important;
-    overflow-x: hidden !important; /* Keeps the dirty horizontal scrollbar dead */
-    position: relative !important;
-}
 
 /* ─── KILL THE RED STREAMLIT CROWN & MANAGE APP BUTTON ─── */
 [data-testid="manage-app-button"],
@@ -173,16 +160,16 @@ div:has(> a[href*="manage.streamlit.app"]) {
 
 /* ─── CYBERPUNK SCROLLBAR STYLING ─── */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    background: transparent;
 }
 ::-webkit-scrollbar-track {
     background: var(--bg-base);
 }
 ::-webkit-scrollbar-thumb {
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.9);
     border: 1px solid var(--border-glow);
-    border-radius: 6px;
+    border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 240, 255, 0.2);
