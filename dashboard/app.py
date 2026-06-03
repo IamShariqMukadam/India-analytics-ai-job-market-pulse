@@ -145,15 +145,33 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
 
-/* ─── FULL PAGE SCREENSHOT FIX (DESKTOP & DEVTOOLS) ─── */
-/* Forces Streamlit to scroll the actual browser body instead of an internal div */
-html, body, .stApp, 
-[data-testid="stAppViewContainer"], 
-[data-testid="stMain"], 
-.main {
+/* ─── FULL PAGE SCREENSHOT FIX & CLEAN SCROLLBARS ─── */
+html, body {
+    overflow-x: hidden !important; /* Kills the dirty horizontal scrollbar */
+}
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
     overflow: visible !important;
+    overflow-x: hidden !important;
     height: auto !important;
     min-height: 100vh !important;
+}
+
+/* ─── CYBERPUNK SCROLLBAR STYLING ─── */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-glow);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 240, 255, 0.2);
+    border: 1px solid var(--cyan);
 }
                         
 /* ─── MOBILE RESPONSIVENESS ─── */
