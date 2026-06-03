@@ -9,7 +9,7 @@
 ## 📸 Dashboard Screenshots
 
 ### Streamlit Live Dashboard — Dark UI
-> _Replace with screenshot of your KPI + Skills Intel view_
+![StreamLit Live DashBoard](deploy/JobMarketPulseSS.png)
 
 ### Power BI Report — DashBoard: 
 ![Power BI DashBoard](powerbi/screenshots/PowerBiDashboard.png)
