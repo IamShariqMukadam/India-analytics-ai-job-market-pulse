@@ -368,22 +368,22 @@ components.html("""
 (function() {
     const doc = window.parent.document;
                 
-    // Resize all Plotly charts to natural 4:3 aspect ratio on mobile
-    function resizePlotlyCharts() {
-        const isMobile = window.parent.innerWidth < 768;
-        if (!isMobile) return;
-        const Plotly = window.parent.Plotly;
-        if (!Plotly) return;
-        window.parent.document.querySelectorAll('.js-plotly-plot').forEach(function(el) {
-            const w = el.offsetWidth;
-            if (!w) return;
-            const h = Math.round(w * 0.78); // natural ~4:3 landscape ratio
-            try { Plotly.relayout(el, { height: h }); } catch(e) {}
-        });
-    }
-    setTimeout(resizePlotlyCharts, 1200);
-    setTimeout(resizePlotlyCharts, 3000);
-    window.parent.addEventListener('resize', resizePlotlyCharts);
+    # // Resize all Plotly charts to natural 4:3 aspect ratio on mobile
+    # function resizePlotlyCharts() {
+    #     const isMobile = window.parent.innerWidth < 768;
+    #     if (!isMobile) return;
+    #     const Plotly = window.parent.Plotly;
+    #     if (!Plotly) return;
+    #     window.parent.document.querySelectorAll('.js-plotly-plot').forEach(function(el) {
+    #         const w = el.offsetWidth;
+    #         if (!w) return;
+    #         const h = Math.round(w * 0.78); // natural ~4:3 landscape ratio
+    #         try { Plotly.relayout(el, { height: h }); } catch(e) {}
+    #     });
+    # }
+    # setTimeout(resizePlotlyCharts, 1200);
+    # setTimeout(resizePlotlyCharts, 3000);
+    # window.parent.addEventListener('resize', resizePlotlyCharts);
 
     function killBadge() {
         // 1. Nuke by href
@@ -433,7 +433,7 @@ components.html("""
 
 
 # ─── 3. PLOTLY CHART THEME ENGINE ──────────────────────────────────────────────
-def fancy_layout(h=380):
+def fancy_layout(h=300):
     """Generates a perfect dark-mode glass layout for Plotly."""
     return dict(
         paper_bgcolor='rgba(0,0,0,0)', 
@@ -573,7 +573,7 @@ with col1:
             marker=dict(color=t20["mention_count"], colorscale=['#7C3AED', '#FF2D7E', '#00F0FF']),
             hovertemplate='<b>%{y}</b><br>%{x} mentions<extra></extra>'
         ))
-        L = fancy_layout(500); L['title'] = "Top 20 Skills Demanded"
+        L = fancy_layout(380); L['title'] = "Top 20 Skills Demanded"
         fig.update_layout(**L)
         L['xaxis_title'] = "Number of Mentions in Job Postings"
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
@@ -590,7 +590,7 @@ with col2:
                 line=dict(color=color, width=3), mode='lines+markers',
                 hovertemplate=f'<b>{skill}</b><br>%{{y}} mentions<extra></extra>',
             ))
-        L2 = fancy_layout(500); L2['title'] = "Weekly Velocity — Top 8 Skills"
+        L2 = fancy_layout(380); L2['title'] = "Weekly Velocity — Top 8 Skills"
         L2['legend'] = dict(orientation='h', y=-0.2)
         fig2.update_layout(**L2)
         st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
@@ -634,7 +634,7 @@ with col3:
             x=ct["city"], y=ct["job_count"],
             marker=dict(color=ct["job_count"], colorscale='Tealgrn'),
         ))
-        L4 = fancy_layout(320); L4['title'] = "Job Volume by Hub"
+        L4 = fancy_layout(260); L4['title'] = "Job Volume by Hub"
         fig4.update_layout(**L4)
         st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
 
@@ -647,7 +647,7 @@ with col4:
             textinfo='percent', textposition='inside',
             insidetextorientation='radial'
         ))
-        L7 = fancy_layout(420); L7['title'] = "Role Category Split"
+        L7 = fancy_layout(320); L7['title'] = "Role Category Split"
         L7['showlegend'] = True
         L7['legend'] = dict(
             orientation='v', x=1.02, y=0.5,
@@ -687,7 +687,7 @@ with col5:
             marker=dict(color=bar_colors), 
             hovertemplate='<b>%{y}</b><br>%{x} openings<extra></extra>'
         ))
-        L6 = fancy_layout(450); L6['title'] = "Top 15 Hiring Companies"
+        L6 = fancy_layout(340); L6['title'] = "Top 15 Hiring Companies"
         L6['xaxis_title'] = "Total Active Job Openings" 
         fig6.update_layout(**L6)
         st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
@@ -699,7 +699,7 @@ with col6:
         
         fig8 = go.Figure(go.Bar(x=ed["Exp"], y=ed["Count"], marker=dict(color='#3B82F6')))
         
-        L8 = fancy_layout(450)
+        L8 = fancy_layout(340)
         L8['title'] = "Experience Distribution"
         L8['xaxis'] = dict(
             title="Minimum Years of Experience", 
@@ -742,7 +742,7 @@ with col7:
             hoverongaps=False,
             hovertemplate='<b>Role:</b> %{y}<br><b>Skill:</b> %{x}<br><b>Mentions:</b> %{z}<extra></extra>'
         ))
-        L_hm = fancy_layout(450); L_hm['title'] = "Skill Dependency Matrix by Role"
+        L_hm = fancy_layout(340); L_hm['title'] = "Skill Dependency Matrix by Role"
         L_hm['xaxis'] = dict(tickangle=-45, gridcolor='rgba(255,255,255,0)')
         L_hm['yaxis'] = dict(gridcolor='rgba(255,255,255,0)')
         fig_hm.update_layout(**L_hm)
@@ -766,7 +766,7 @@ with col8:
                 hovertemplate='<b>%{x}</b><br>Salary: ₹%{y} LPA<extra></extra>'
             ))
             
-        L_box = fancy_layout(450)
+        L_box = fancy_layout(340)
         L_box['title'] = "Realistic Salary Distribution (LPA)"
         L_box['yaxis_title'] = "Minimum Salary (LPA)"
         L_box['showlegend'] = False 
