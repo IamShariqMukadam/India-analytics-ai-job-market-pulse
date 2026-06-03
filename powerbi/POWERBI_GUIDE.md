@@ -1,232 +1,275 @@
-# Power BI Report — India Job Market Pulse
-## Step-by-step guide to build the 3-page report for portfolio screenshots
+# Power BI Report — India Analytics and AI Job Market Pulse
+## Built by Shariq Mukadam | 6,433 Jobs | 14 Weeks | LinkedIn · Naukri · Internshala
 
 ---
 
-## Step 1 — Load Data
-1. Open Power BI Desktop (free download: powerbi.microsoft.com)
-2. **Home → Get Data → Excel Workbook**
-3. Select `powerbi/india_job_market_powerbi.xlsx`
-4. Check all 6 sheets → **Load**
+## Overview
+
+This report was built entirely on **Power BI Service (web)** — no desktop app required.
+Works on Linux, Mac, or any OS with a browser.
+
+**Live report:** 4 pages + 1 executive dashboard
+**Data:** 6,433 job listings scraped from LinkedIn, Naukri, and Internshala over 14 weeks
+**Theme:** Dark navy (`#0D1B2A`) with blue accents (`#47B4FF`, `#2196F3`)
 
 ---
 
-## Step 2 — Data Model (Relationships)
-Go to **Model view** and create these relationships:
+## Screenshot — Executive Dashboard
+
+![Dashboard](powerbi/screenshots/PowerBiDashboard.png)
+
+---
+
+## Step 1 — Export data from SQLite
+
+Run the export script to generate the Excel file:
+
+```bash
+pip install pandas openpyxl
+python powerbi/export_for_powerbi.py
 ```
-Jobs[id]          → SkillsFlat[job_id]       (1:Many)
-Jobs[scrape_week] → WeeklySkills[week]        (Many:Many, both directions)
-Jobs[city_normalized] → CityDemand[city]     (Many:Many)
-```
+
+Output: `powerbi/india_job_market_powerbi.xlsx` — 6 sheets:
+
+| Sheet | Contents |
+|---|---|
+| `Jobs` | All job listings (6,433 rows, 23 columns) |
+| `WeeklySkills` | Skill mention counts per week |
+| `CityDemand` | Job volume + salary by city |
+| `RoleDemand` | Job count by role category |
+| `TopCompanies` | Top 30 hiring companies |
+| `SkillsFlat` | One row per job per skill (for bar charts) |
 
 ---
 
-## Step 3 — DAX Measures
-In **Table view → Jobs table**, create these measures (Home → New Measure):
+## Step 2 — Upload to Power BI Service
+
+1. Go to [app.powerbi.com](https://app.powerbi.com) → sign in with Microsoft account
+2. Click **"+ New item"** → **"Report"**
+3. In Power Query → Connection settings → **"Upload file"** → select `india_job_market_powerbi.xlsx`
+4. Click **Next** → all 6 tables load automatically
+5. Click **"Create a report"** → name the semantic model → click **Create**
+
+---
+
+## Step 3 — Calculated columns (in semantic model)
+
+Go to **Open semantic model** → select the relevant table → **New column**:
 
 ```dax
-Total Jobs = COUNTROWS(Jobs)
+-- In WeeklySkills table: short week label for X-axis
+WeekShort = RIGHT(WeeklySkills[week], 3)
 
-Avg Salary Min LPA = AVERAGE(Jobs[salary_min_lpa])
+-- In WeeklySkills table: numeric week for sort order
+WeekNum = VALUE(MID(WeeklySkills[week], 7, 2))
 
-Fresher Role % = 
-DIVIDE(
-    COUNTROWS(FILTER(Jobs, Jobs[is_fresher_role] = 1)),
-    COUNTROWS(Jobs)
-) * 100
-
-Top Skill = 
-TOPN(1, VALUES(SkillsFlat[skill]), 
-    CALCULATE(COUNTROWS(SkillsFlat)), DESC)
-
-Power BI vs Tableau Ratio = 
-DIVIDE(
-    CALCULATE(COUNTROWS(SkillsFlat), SkillsFlat[skill] = "power bi"),
-    CALCULATE(COUNTROWS(SkillsFlat), SkillsFlat[skill] = "tableau")
-)
+-- In Jobs table: fresher vs experienced label
+Exp Label = IF(Jobs[is_fresher_role] = 1, "Fresher", "Experienced")
 ```
+
+Then click `WeekShort` column → **Sort by Column** → select `WeekNum`
+This ensures weeks sort as W10 → W11 → W12 → W23 instead of alphabetically.
 
 ---
 
-## Step 4 — PAGE 1: Market Overview Dashboard
+## Step 4 — Color theme
 
-**Page name:** `Market Overview`
-**Background color:** #F0F4FF (light blue-white)
+Apply these colors consistently across all pages:
 
-### Visuals to add:
+| Role | Hex | Used for |
+|---|---|---|
+| Page background | `#0D1B2A` | Canvas background |
+| Card/visual background | `#162D42` | All chart backgrounds |
+| Primary blue | `#47B4FF` | Titles, borders, highlights |
+| Chart blue | `#2196F3` | Bar/column chart fills |
+| Accent cyan | `#00B4D8` | Secondary chart elements |
+| Muted text | `#8BA5BE` | Axis labels, subtitles |
+| White | `#FFFFFF` | KPI card numbers |
 
-**A. KPI Cards (top row — 5 cards)**
-- Visual: **Card**
-- Card 1: Field = `[Total Jobs]` | Label = "Total Jobs Tracked"
-- Card 2: Field = `[Avg Salary Min LPA]` | Label = "Avg Min Salary (LPA)"
-- Card 3: Field = `[Fresher Role %]` | Label = "Fresher Eligible %"
-- Card 4: Field = `[Power BI vs Tableau Ratio]` | Label = "Power BI : Tableau Ratio"
-- Card 5: From WeeklySkills → Max(mention_count) | Label = "Peak Skill Demand"
-- Format all cards: Bold value, #1565C0 font color, white background, subtle border
+To apply page background:
+- Click blank canvas → Format page (paintbrush) → **Canvas background** → enter hex
 
-**B. Top 20 Skills Bar Chart**
-- Visual: **Clustered Bar Chart** (horizontal)
-- Axis (Y): `SkillsFlat[skill]`
-- Values (X): `Count of SkillsFlat[skill]`
-- Sort: Descending by count
-- Color: Single color #2196F3
-- Title: "Top 20 Skills Demanded Across India"
+To apply visual background:
+- Click visual → Format visual → **General** → **Effects** → **Visual border** → color `#47B4FF`, radius `8`
 
-**C. Skill Trend Line Chart**
-- Visual: **Line Chart**
-- X-axis: `WeeklySkills[week]`
-- Y-axis: `WeeklySkills[mention_count]`
+---
+
+## Step 5 — KPI Cards (top row, all pages)
+
+For each card:
+1. Click blank canvas → select **Card** visual
+2. Drag field into **Value** box → set correct aggregation
+3. Format visual → **Visual** tab → **Category label** → toggle **Off**
+4. Right-click field in Value box → **"Rename for this visual"** → type clean label
+5. Format visual → **General** → **Effects** → **Visual border** → On → color `#47B4FF` → radius `8`
+
+| Card | Field | Aggregation | Label |
+|---|---|---|---|
+| 1 | `Jobs[id]` | Count | Total Job Tracked |
+| 2 | `Jobs[salary_min_lpa]` | Average | Avg Salary LPA |
+| 3 | `Jobs[is_fresher_role]` | Average → format as % | Fresher Eligibility |
+| 4 | `SkillsFlat[skill]` | Count | Skills Mentioned |
+| 5 | `WeeklySkills[mention_count]` | Max | Peak Demand |
+
+---
+
+## Step 6 — Dashboard page (Executive Summary)
+
+**Page name:** `Dashboard`
+
+This is the hero page — all key insights in one view.
+
+### Layout grid
+
+```
+┌─────────────────────────────────────────────────────┐
+│           Title + subtitle (text box)               │
+├──────────┬──────────┬──────────┬──────────┬─────────┤
+│ Total    │ Avg      │ Fresher  │ Skills   │  Peak   │
+│ Jobs     │ Salary   │  %       │ Mentions │ Demand  │
+├──────────┴──────────┴──────────┴──────────┴─────────┤
+│                                  │  Jobs by Role    │
+│  Top 20 Skills (horiz bar)       │  Category        │
+│                                  │  (donut)         │
+│  Top 20 Companies (horiz bar)    ├──────────────────┤
+│                                  │  Fresher vs Exp  │
+│                                  │  (pie)           │
+├────────────────┬─────────────────┼──────────────────┤
+│ Skill Demand   │  Job Volume     │  City            │
+│ Trend (line)   │  by City (col)  │  Intelligence    │
+│                │                 │  (matrix table)  │
+└────────────────┴─────────────────┴──────────────────┘
+```
+
+### Title text box
+
+- Insert → Text box → type:
+  ```
+  India Analytics and AI Job Market Pulse
+  ```
+- Font size: `24`, color: `#47B4FF`, bold
+- Subtitle below: `Built by Shariq Mukadam | 6,433 Jobs | 14 Weeks | LinkedIn | Naukri | Internshala`
+- Font size: `11`, color: `#8BA5BE`
+
+### Visuals
+
+**Top 20 Skills — horizontal bar chart**
+- Y-axis: `SkillsFlat[skill]`
+- X-axis: `SkillsFlat[skill]` → Count
+- Filter: Top N = 20 by Count of skill
+- Sort: descending
+- Title: `Top 20 Skills Demanded in Data Analytics and AI`
+
+**Top 20 Companies — horizontal bar chart**
+- Y-axis: `TopCompanies[company]`
+- X-axis: `TopCompanies[total_openings]` → Sum
+- Filter: Top N = 20 by total_openings
+- Sort: descending
+- Title: `Top 20 Hiring Companies — Analytics Roles India`
+
+**Skill Demand Trend — line chart**
+- X-axis: `WeeklySkills[WeekShort]`
+- Y-axis: `WeeklySkills[mention_count]` → Sum
 - Legend: `WeeklySkills[skill]`
-- Filter: Top 8 skills by total mention_count
-- Title: "Skill Demand Trend — Weekly"
+- Filter: Top 8 skills by Sum of mention_count
+- Title: `Skill Demand Trend — Weekly`
 
-**D. Role Category Donut**
-- Visual: **Donut Chart**
+**Jobs by Role Category — donut chart**
 - Legend: `RoleDemand[role_category]`
 - Values: `RoleDemand[job_count]`
-- Colors: Blues palette
-- Title: "Jobs by Role Category"
+- Title: `Jobs by Role Category`
 
----
+**Fresher vs Experienced — pie chart**
+- Legend: `Jobs[Exp Label]`
+- Values: `Jobs[id]` → Count
+- Title: `Fresher vs Experienced`
 
-## Step 5 — PAGE 2: Geographic & Salary Analysis
+**Job Volume by City — column chart**
+- X-axis: `CityDemand[city]`
+- Y-axis: `CityDemand[job_count]` → Sum
+- Sort: descending
+- Title: `Job Volume by City`
 
-**Page name:** `Geographic Intelligence`
-
-**A. Jobs by City Bar Chart**
-- Visual: **Clustered Column Chart**
-- X: `CityDemand[city]`
-- Y: `CityDemand[job_count]` (Sum)
-- Color: Gradient blue (Format → Data colors → diverging)
-- Title: "Job Volume by City"
-
-**B. Salary by City Bar Chart**
-- Visual: **Clustered Column Chart**
-- X: `CityDemand[city]`
-- Y: `CityDemand[avg_salary_min]` (Average)
-- Color: Green gradient
-- Title: "Avg Min Salary by City (LPA)"
-
-**C. Fresher % by City**
-- Visual: **Clustered Bar Chart**
-- Y: `CityDemand[city]`
-- X: `CityDemand[fresher_pct]` (Average)
-- Add data labels
-- Title: "Fresher-Eligible Roles % by City"
-
-**D. City Intelligence Matrix Table**
-- Visual: **Matrix**
+**City Intelligence — matrix table**
 - Rows: `CityDemand[city]`
-- Values: Sum(job_count), Average(avg_salary_min), Average(fresher_pct)
-- Format: Conditional formatting on job_count (color scale blue)
-- Title: "City Intelligence Summary"
-
-**E. Salary Distribution Histogram**
-- Visual: **Column Chart** with salary buckets
-- Create a calculated column in Jobs:
-  ```dax
-  Salary Bucket = 
-  SWITCH(TRUE(),
-    Jobs[salary_min_lpa] <= 3,  "0-3 LPA",
-    Jobs[salary_min_lpa] <= 5,  "3-5 LPA",
-    Jobs[salary_min_lpa] <= 8,  "5-8 LPA",
-    Jobs[salary_min_lpa] <= 12, "8-12 LPA",
-    Jobs[salary_min_lpa] <= 20, "12-20 LPA",
-    "20+ LPA"
-  )
-  ```
-- X: Salary Bucket, Y: Count of Jobs
-- Title: "Salary Range Distribution"
+- Values: `job_count` (Sum), `avg_salary_min` (Average)
+- Title: `City Intelligence`
 
 ---
 
-## Step 6 — PAGE 3: Recruiter Intelligence
+## Step 7 — Export + Screenshots on Linux
 
-**Page name:** `Recruiter Intelligence`
+**Export to PDF:**
+- File → Export → Export to PDF → downloads all page
 
-**A. Top 20 Companies Hiring**
-- Visual: **Clustered Bar Chart** (horizontal)
-- Y: `TopCompanies[company]`
-- X: `TopCompanies[total_openings]`
-- Sort descending
-- Color: #2196F3
-- Title: "Top 20 Hiring Companies — Analytics Roles India"
+**Convert PDF to PNG (high resolution):**
 
-**B. BI Tool Battle Chart**
-- Visual: **Line Chart**
-- X: `WeeklySkills[week]`
-- Y: `WeeklySkills[mention_count]`
-- Legend: `WeeklySkills[skill]`
-- Filter visual: skill IN (power bi, tableau, looker, qlik)
-- Colors: Power BI=#2196F3, Tableau=#E87722, Looker=#34A853
-- Title: "Power BI vs Tableau vs Looker — Weekly Demand"
+```bash
+# Fix ImageMagick PDF policy if needed
+sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml
 
-**C. Experience Distribution**
-- Visual: **Clustered Column Chart**
-- X: `Jobs[exp_min]` (bins 0-10)
-- Y: Count of Jobs
-- Title: "Jobs by Min Experience Required"
+# Convert to PNG at 200 DPI
+convert -density 200 "filepath.pdf" page_%d.png
 
-**D. Fresher vs Experienced Pie**
-- Visual: **Pie Chart**
-- Create calculated column:
-  ```dax
-  Exp Category = 
-  IF(Jobs[exp_min] = 0, "Fresher (0yr)",
-  IF(Jobs[exp_min] <= 2, "Junior (1-2yr)", "Mid/Senior (3+yr)"))
-  ```
-- Legend: Exp Category, Values: Count
-- Title: "Fresher vs Experienced Split"
-
-**E. Insight Text Boxes** (Insert → Text Box)
-Add 3 text boxes with findings like:
+# Move to project folder
+mkdir -p powerbi/screenshots
+mv ~/page_*.png powerbi/screenshots/
 ```
-💡 Power BI is 2x more demanded than Tableau in India
-💡 Bangalore leads job volume; Mumbai leads salary
-💡 Only 18% of roles are truly fresher-eligible
+
+**Rename files:**
+```bash
+mv powerbi/screenshots/page_0.png powerbi/screenshots/PowerBiDashboard.png
 ```
-Format: Blue border, light background, bold insight text
 
 ---
 
-## Step 7 — Global Formatting (Apply to all pages)
+## Step 8 — Add to README
 
-1. **View → Themes → Browse** → Create custom theme:
-   - Primary: #2196F3
-   - Background: #FFFFFF
-   - Secondary bg: #F0F4FF
-   - Text: #1A1A2E
+```markdown
+## Power BI Dashboard — India Job Market Pulse
 
-2. **All page titles:**
-   - Font: Segoe UI Semibold, 14pt, #1565C0
+> Built on Power BI Service (web) | Dark navy theme | 4 pages
 
-3. **Add logo/header text box on each page:**
-   ```
-   📊 India Job Market Pulse | Built by Shariq | Updated Weekly
-   ```
+![Dashboard](powerbi/screenshots/PowerBiDashboard.png)
 
-4. **Add page navigation buttons** (Insert → Buttons → Page Navigator)
+### Key Findings
+- SQL, Python and Power BI are the top 3 demanded skills
+- Bangalore leads in job volume (1,616 listings); Banglore leads in avg salary (8.61 LPA)
+- Only 9.56% of roles are truly fresher-eligible
+- Data Engineer dominates at 53% of all analytics roles
+- Power BI demand is rising sharply vs Tableau over 14 weeks
 
----
-
-## Step 8 — Screenshot for README/Resume
-
-1. Set canvas size: **View → Page View → Fit to Page**
-2. Each page: **File → Export → Export to PDF** (then screenshot)
-   OR use Windows Snipping Tool / Mac Screenshot
-3. Save 3 screenshots:
-   - `powerbi/screenshots/page1_overview.png`
-   - `powerbi/screenshots/page2_geography.png`
-   - `powerbi/screenshots/page3_recruiter.png`
-4. Add to README.md:
-   ```markdown
-   ## Power BI Report
-   ![Overview](powerbi/screenshots/page1_overview.png)
-   ![Geography](powerbi/screenshots/page2_geography.png)
-   ![Recruiter](powerbi/screenshots/page3_recruiter.png)
-   ```
+### Pages
+| Page | Focus |
+|---|---|
+| Dashboard | Executive summary — all insights in one view |
+| Market Overview | KPIs + skills + trend + role breakdown |
+| Geographic Intelligence | City-level jobs, salary, fresher % |
+| Recruiter Intelligence | Companies, BI tools, experience split |
+```
 
 ---
 
-## Estimated time: 2-3 hours for all 3 pages
-## Screenshot tip: Use 1920x1080 resolution for best quality
+## Key insights from the data
+
+- **SQL** is the #1 demanded skill across all cities and role types
+- **Power BI** demand is growing 3x faster than Tableau over the 14-week period
+- **Bangalore** has the most jobs (1,616) but **Gurgaon** has the highest avg salary (8.61 LPA)
+- **Accenture, Infosys and EXL** are the top 3 hiring companies for analytics roles
+- **53% of all roles** are Data Engineer — far outpacing Data Analyst (17%) and BI Developer (10%)
+- Only **9.56% of listings** are genuinely accessible to freshers
+
+---
+
+## Tools used
+
+| Tool | Purpose |
+|---|---|
+| Python (pandas, sqlite3, openpyxl) | Data extraction and Excel export |
+| Power BI Service (web) | Report building and visualisation |
+| DAX | Calculated columns (WeekShort, WeekNum, Exp Label) |
+| ImageMagick | PDF to PNG conversion on Linux |
+
+---
+
+*Built in one session — approx 6 hours from raw data to polished dashboard*

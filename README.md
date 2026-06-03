@@ -11,14 +11,8 @@
 ### Streamlit Live Dashboard — Dark UI
 > _Replace with screenshot of your KPI + Skills Intel view_
 
-### Power BI Report — Page 1: Market Overview
-![Power BI Page 1](powerbi/screenshots/page1_overview.png)
-
-### Power BI Report — Page 2: Geographic Intelligence
-![Power BI Page 2](powerbi/screenshots/page2_geography.png)
-
-### Power BI Report — Page 3: Recruiter Intelligence
-![Power BI Page 3](powerbi/screenshots/page3_recruiter.png)
+### Power BI Report — DashBoard: 
+![Power BI DashBoard](powerbi/screenshots/PowerBiDashboard.png)
 
 ---
 
@@ -68,7 +62,7 @@ Job Portals (Naukri · LinkedIn · Internshala)
      ┌──────────────────┬────────────────────────┐
      ↓                  ↓                        ↓
  dashboard/app.py    analysis/eda.py    powerbi/export_for_powerbi.py
-[Streamlit Cloud]   [12 EDA charts]    [Excel → Power BI 3-page report]
+[Streamlit Cloud]   [12 EDA charts]    [Excel → Power BI DashBoard report]
 [Dark neon UI]      [PNG charts]
 ```
 
@@ -107,8 +101,8 @@ india-job-market-pulse/
 ├── powerbi/
 │   ├── export_for_powerbi.py        # Exports DB → Excel for Power BI
 │   ├── india_job_market_powerbi.xlsx # 6-sheet Excel (auto-generated)
-│   ├── POWERBI_GUIDE.md             # Step-by-step 3-page report build guide
-│   └── screenshots/                 # Power BI report screenshots
+│   ├── POWERBI_GUIDE.md             # Step-by-step Dashboard report build guide
+│   └── screenshots/                 # Power BI report screenshot
 ├── deploy/
 │   └── streamlit_deploy.md          # Streamlit Cloud deploy guide
 ├── .env                             # GROQ_API_KEY (not committed)
@@ -154,7 +148,7 @@ python ../powerbi/export_for_powerbi.py
 | **LLM Extraction** | Groq API — llama-3.1-8b-instant (3-key rotation) |
 | **Dashboard UI** | Streamlit, Custom CSS (dark neon), Plotly Graph Objects |
 | **EDA / Charts** | Matplotlib, Seaborn, WordCloud |
-| **BI Reporting** | Power BI Desktop — 3-page report |
+| **BI Reporting** | Power BI Desktop — Dashboard report |
 | **Deployment** | Streamlit Cloud (free public URL) |
 
 ---
