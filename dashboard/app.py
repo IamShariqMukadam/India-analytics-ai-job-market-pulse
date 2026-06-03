@@ -367,6 +367,23 @@ components.html("""
 <script>
 (function() {
     const doc = window.parent.document;
+                
+    // Resize all Plotly charts to natural 4:3 aspect ratio on mobile
+    function resizePlotlyCharts() {
+        const isMobile = window.parent.innerWidth < 768;
+        if (!isMobile) return;
+        const Plotly = window.parent.Plotly;
+        if (!Plotly) return;
+        window.parent.document.querySelectorAll('.js-plotly-plot').forEach(function(el) {
+            const w = el.offsetWidth;
+            if (!w) return;
+            const h = Math.round(w * 0.78); // natural ~4:3 landscape ratio
+            try { Plotly.relayout(el, { height: h }); } catch(e) {}
+        });
+    }
+    setTimeout(resizePlotlyCharts, 1200);
+    setTimeout(resizePlotlyCharts, 3000);
+    window.parent.addEventListener('resize', resizePlotlyCharts);
 
     function killBadge() {
         // 1. Nuke by href
@@ -422,10 +439,10 @@ def fancy_layout(h=380):
         paper_bgcolor='rgba(0,0,0,0)', 
         plot_bgcolor='rgba(0,0,0,0)', 
         height=h,
-        font=dict(family='Outfit, sans-serif', color='#F8FAFC', size=13),
-        margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8')),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8')),
+        font=dict(family='Outfit, sans-serif', color='#F8FAFC', size=11),
+        margin=dict(l=8, r=8, t=30, b=8),
+        xaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8', size=10), automargin=True),
+        yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zeroline=False, tickfont=dict(color='#94A3B8', size=10), automargin=True),
         hoverlabel=dict(bgcolor='rgba(15, 23, 42, 0.9)', bordercolor='#00F0FF', font=dict(family='JetBrains Mono')),
         legend=dict(font=dict(color='#F8FAFC'), bgcolor='rgba(0,0,0,0)'),
         dragmode=False, # <-- ADD THIS LINE HERE
