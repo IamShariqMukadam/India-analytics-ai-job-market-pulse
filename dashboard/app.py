@@ -144,6 +144,18 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border: 1px solid var(--magenta) !important; box-shadow: 0 0 12px rgba(255, 45, 126, 0.4) !important; }
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
+
+/* ─── FULL PAGE SCREENSHOT FIX (DESKTOP & DEVTOOLS) ─── */
+/* Forces Streamlit to scroll the actual browser body instead of an internal div */
+html, body, .stApp, 
+[data-testid="stAppViewContainer"], 
+[data-testid="stMain"], 
+.main {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100vh !important;
+}
+                        
 /* ─── MOBILE RESPONSIVENESS ─── */
 @media (max-width: 768px) {
     .block-container {
