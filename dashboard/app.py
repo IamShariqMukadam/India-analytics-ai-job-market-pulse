@@ -145,15 +145,30 @@ div[data-baseweb="select"] > div { background: rgba(2, 6, 23, 0.8) !important; b
 [data-testid="stTextInput"] input { color: var(--text-primary) !important; }
 
 
-/* ─── FULL PAGE SCREENSHOT FIX & CLEAN SCROLLBARS ─── */
-html, body {
-    overflow-x: hidden !important; /* Kills the dirty horizontal scrollbar */
-}
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
-    overflow: visible !important;
-    overflow-x: hidden !important;
+/* ─── ULTIMATE FULL PAGE SCREENSHOT FIX & CLEAN SCROLLBARS ─── */
+/* Unwraps every single Streamlit nesting doll so the browser can capture the full length */
+html, body, #root, .stApp, 
+[data-testid="stAppViewContainer"], 
+[data-testid="stMain"], 
+[data-testid="stMainBlockContainer"] {
     height: auto !important;
     min-height: 100vh !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overflow-x: hidden !important; /* Keeps the dirty horizontal scrollbar dead */
+    position: relative !important;
+}
+
+/* ─── KILL THE RED STREAMLIT CROWN & MANAGE APP BUTTON ─── */
+[data-testid="manage-app-button"],
+[data-testid="stManageAppButton"],
+.manage-app-button,
+div:has(> a[title="Manage app"]),
+div:has(> a[href*="manage.streamlit.app"]) {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
 }
 
 /* ─── CYBERPUNK SCROLLBAR STYLING ─── */
