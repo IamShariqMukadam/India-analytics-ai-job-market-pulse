@@ -20,7 +20,7 @@
 
 | Metric | Details |
 |--------|---------|
-| **Skill Demand** | Top 25 skills demanded across DA/BA/DE/DS/AI roles — live counts updated weekly |
+| **Skill Demand** | Top 20 skills demanded across DA/BA/DE/DS/AI roles — live counts updated weekly |
 | **BI Tool Battle** | Week-over-week demand velocity: Power BI vs Tableau vs Looker |
 | **Geographic Matrix** | City-wise job volume, floor salaries (LPA), and fresher ingress ratios |
 | **Role Split** | DA vs BA vs Data Engineer vs Data Scientist vs AI Engineer demand breakdown |
@@ -53,7 +53,7 @@ Job Portals (Naukri · LinkedIn · Internshala)
      scraper/cleaner.py
 [Pandas — normalize cities, extract 50+ skills, parse salary/exp]
 [SQLite — jobs + 4 weekly aggregation tables]
-[Excel — JobHarvestor.xlsx with skill frequency]
+[Excel — india-job-market-pulse.xlsx with skill frequency]
             ↓
      scraper/main2.py          (Day 2)
 [JD scraping — LinkedIn API + Selenium Naukri]
@@ -155,7 +155,7 @@ python ../powerbi/export_for_powerbi.py
 
 ## 💡 Technical Highlights
 
-- **Custom dark UI** — extensive CSS overrides bypassing default Streamlit styling, achieving a neon-on-purple aesthetic not available via standard theming
+- **Custom dark UI** — extensive CSS overrides bypassing default Streamlit styling, achieving a neon-on-blue aesthetic not available via standard theming
 - **3-key Groq rotation** — cycles across 3 API keys to triple throughput (~90 req/min) during LLM enrichment of 1700+ job descriptions
 - **Anti-bot scraping** — user-agent rotation, randomized 2.5–4.5s delays, non-headless fallback, junk-role filtering
 - **Advanced skill extraction** — Regex engine matches 50+ data-stack patterns, prioritizing multi-word phrases first to prevent false-positive partial matches

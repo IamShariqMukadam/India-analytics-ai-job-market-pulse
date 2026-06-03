@@ -5,7 +5,7 @@ load_dotenv()
 DATA_DIR   = os.path.join(os.path.dirname(__file__),"..","data")
 DB_PATH    = os.path.join(DATA_DIR,"job_market.db")
 CSV_OUTPUT = os.path.join(DATA_DIR,"jobs_raw.csv")
-XLSX_OUTPUT= os.path.join(DATA_DIR,"DataAnalyst-1June.xlsx")
+XLSX_OUTPUT= os.path.join(DATA_DIR,"india-job-market-pulse.xlsx")
 
 # ROLES = [
 #     "Data Analyst","Junior Data Analyst","Business Analyst",
