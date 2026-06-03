@@ -5,3 +5,4 @@ venv/
 __pycache__/
 *.pkl
 *.pyc
+powerbi/india_job_market_powerbi.xlsx
