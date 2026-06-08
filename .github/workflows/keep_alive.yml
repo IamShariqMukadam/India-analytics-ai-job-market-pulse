@@ -1,55 +1,16 @@
-# .github/workflows/keep_alive.yml
 name: Keep Alive
 
 on:
   schedule:
-    - cron: '0 */4 * * *'   # every 4 hours
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
-  wake:
+  ping:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Playwright
+      - name: Ping
         run: |
-          pip install playwright
-          playwright install chromium --with-deps
-
-      - name: Wake app
-        run: |
-          python - <<'EOF'
-          import asyncio
-          from playwright.async_api import async_playwright
-
-          async def wake():
-              async with async_playwright() as p:
-                  browser = await p.chromium.launch()
-                  page = await browser.new_page()
-                  print("Loading app...")
-                  await page.goto(
-                      "https://jobmarketpulse.streamlit.app",
-                      timeout=90000,
-                      wait_until="domcontentloaded"
-                  )
-                  # Click wake button if sleeping
-                  try:
-                      btn = page.get_by_text("Yes, get this app back up!")
-                      if await btn.is_visible(timeout=5000):
-                          await btn.click()
-                          print("Clicked wake button — waiting for app to load")
-                          await page.wait_for_timeout(40000)
-                  except:
-                      print("App already awake")
-                  
-                  await page.wait_for_timeout(15000)
-                  print("Done")
-                  await browser.close()
-
-          asyncio.run(wake())
-          EOF
+          curl -L \
+          -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0" \
+          https://jobmarketpulse.streamlit.app
