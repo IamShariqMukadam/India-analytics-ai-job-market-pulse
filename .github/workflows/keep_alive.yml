@@ -1,0 +1,15 @@
+name: Keep Alive
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # every 6 hours
+  workflow_dispatch:
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake Streamlit App
+        run: |
+          curl -L --max-time 60 \
+          -H "User-Agent: Mozilla/5.0" \
+          https://jobmarketpulse.streamlit.app
